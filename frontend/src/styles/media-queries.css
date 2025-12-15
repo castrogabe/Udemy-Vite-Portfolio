@@ -1,0 +1,55 @@
+/* Responsive adjustments */
+@media (max-width: 700px) {
+  .navbar-toggler {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .navbar-brand {
+    color: var(--accent);
+  }
+
+  .box {
+    font-size: small;
+  }
+
+  .nav {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .about {
+    background-image: url(https://media1.tenor.com/images/b1b118ed130d9ab085e475ab0ecadcb6/tenor.gif?itemid=15826314);
+    background-repeat: no-repeat;
+    color: var(--secondary);
+    margin-bottom: 1em;
+    text-align: center;
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+
+  h3 {
+    font-size: small;
+    color: var(--primary);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table th,
+  .table td {
+    white-space: normal;
+    word-wrap: break-word;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .description-cell {
+    display: block;
+    width: 800px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+  }
+}

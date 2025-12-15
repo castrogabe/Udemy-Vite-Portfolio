@@ -96,3 +96,47 @@ git commit -m "2nd Commit add static data and steps for second commit" (I copy a
 git status (tells us that everything is committed "working tree clean" on main branch)
 git push
 Now you can check repository for updated code.
+
+# 3rd Commit-Bootstrap, components, styles folder for .css, index.html SEO, About, Home, Portfolio
+
+nvm use 20
+npm run dev
+
+FRONTEND
+folder: components
+BottomFooter.jsx > added
+Footer.jsx > updated
+Header.jsx > updated
+Pagination.jsx > added
+Jumbotron.jsx > added
+LoadingBox.jsx > added
+MessageBox.jsx > added
+Pagination.jsx > added
+WebsiteCard.jsx > added
+
+folder: pages
+About.jsx > updated
+Home.jsx > updated
+Portfolio.jsx > updated
+
+index.html > updated, fontawesome, SEO, images (replace with your own)
+
+** Get the full width of the application across the desktop **
+App.css > delete
+App.jsx > delete App.css
+
+folder: styles
+index.css > updated with links to individual pages and components
+{}package.json > updated with react-helmet-async --legacy-peer-deps
+
+nvm use 20
+npm run dev
+
+steps for third commit, ect: Open new terminal or command prompt in VSCode for the project root
+
+git add . (space between add .)
+git status (shows staged files ready to commit in green)
+git commit -m "2nd Commit add static data and steps for second commit" (I copy and paste this)
+git status (tells us that everything is committed "working tree clean" on main branch)
+git push
+Now you can check repository for updated code.

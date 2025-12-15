@@ -1,0 +1,27 @@
+/* Hero / Jumbotron */
+.jumbotron.jumbotron-fluid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('https://j.gifs.com/YE6OJA.gif');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 3em 3em;
+  color: var(--accent);
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px blue;
+}
+
+/* Typewriter headline */
+.typewriter-container {
+  text-align: center;
+  color: var(--accent);
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px blue;
+}
