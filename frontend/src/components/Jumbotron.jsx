@@ -1,12 +1,3 @@
-// src/components/Jumbotron.jsx
-// -------------------------------------------------------------
-// Jumbotron component that displays animated text using
-// the "typewriter-effect" library.
-//
-// The text prop can be a single string or an array of strings.
-// Each string is animated in sequence with a looping effect.
-// -------------------------------------------------------------
-
 import React from 'react';
 import Typewriter from 'typewriter-effect';
 
@@ -15,9 +6,9 @@ const Jumbotron = ({ text }) => (
     <div className='typewriter-container'>
       <Typewriter
         options={{
-          strings: text, // Text or list of strings to animate
-          autoStart: true, // Starts typing automatically
-          loop: true, // Repeats indefinitely
+          strings: text,
+          autoStart: true,
+          loop: true,
         }}
       />
     </div>
@@ -25,3 +16,5 @@ const Jumbotron = ({ text }) => (
 );
 
 export default Jumbotron;
+
+// If you want to review the commented teaching version of the Jumbotron.jsx setup, check commit lesson-04.

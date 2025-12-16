@@ -1,13 +1,3 @@
-// src/components/Footer.jsx
-// -------------------------------------------------------------
-// Footer component with three columns:
-// 1️⃣ Social links (external)
-// 2️⃣ Internal navigation links (React Router)
-// 3️⃣ Quick contact links
-//
-// This appears on every page above the BottomFooter.
-// -------------------------------------------------------------
-
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -15,9 +5,7 @@ export default function Footer() {
     <footer className='footer'>
       <div className='container-fluid px-3'>
         <div className='row gy-4'>
-          {/* -----------------------------------------------------
-              Column 1: Social Media (external <a> links)
-          ------------------------------------------------------ */}
+          {/* Column 1: Socials (external links use <a>) */}
           <div className='col-12 col-md-4'>
             <h6 className='text-uppercase fw-bold mb-2'>Stay in touch</h6>
             <ul className='list-unstyled m-0'>
@@ -57,9 +45,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* -----------------------------------------------------
-              Column 2: Internal Site Links (React Router <Link>)
-          ------------------------------------------------------ */}
+          {/* Column 2: Internal links */}
           <div className='col-12 col-md-4'>
             <h6 className='text-uppercase fw-bold mb-2'>Get To Know Us</h6>
             <ul className='list-unstyled m-0'>
@@ -82,9 +68,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* -----------------------------------------------------
-              Column 3: Contact & FAQ Links
-          ------------------------------------------------------ */}
+          {/* Column 3: Questions */}
           <div className='col-12 col-md-4'>
             <h6 className='text-uppercase fw-bold mb-2'>Questions</h6>
             <ul className='list-unstyled m-0'>
@@ -111,3 +95,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+// If you want to review the commented teaching version of the Footer.jsx setup, check commit lesson-04.
