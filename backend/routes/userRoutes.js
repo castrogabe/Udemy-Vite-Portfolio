@@ -1,33 +1,20 @@
-// backend/routes/userRoutes.js
-// -------------------------------------------------------------
-// This file defines all routes for user management:
-// - Signup, Signin, Profile Update
-// - Admin user management (CRUD)
-// - Password reset via email (forget/reset password)
-// -------------------------------------------------------------
-
 import express from 'express';
-import bcrypt from 'bcryptjs'; // Used for password hashing
-import jwt from 'jsonwebtoken'; // Used for creating and verifying JWT tokens
-import expressAsyncHandler from 'express-async-handler'; // Simplifies async error handling
-import User from '../models/userModel.js'; // Mongoose User model
-
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import expressAsyncHandler from 'express-async-handler';
+import User from '../models/userModel.js';
 import {
-  isAuth, // Middleware: verifies JWT for protected routes
-  isAdmin, // Middleware: checks if user has admin privileges
-  generateToken, // Utility: creates JWT for new or signed-in users
-  baseUrl, // Utility: constructs backend or frontend base URL
-  transporter, // Configured Nodemailer transporter for sending emails
+  isAuth,
+  isAdmin,
+  generateToken,
+  baseUrl,
+  transporter,
 } from '../utils.js';
 
 const userRouter = express.Router();
-const PAGE_SIZE = 12; // Default pagination limit per page
+const PAGE_SIZE = 12; // 12 items per page
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/users/admin
-// DESCRIPTION: Admin-only route for paginated list of all users
-// MIDDLEWARES: isAuth, isAdmin
-// -------------------------------------------------------------
+// Admin route to get paginated list of users
 userRouter.get(
   '/admin',
   isAuth,
@@ -36,7 +23,6 @@ userRouter.get(
     const page = parseInt(req.query.page || '1', 10);
     const pageSize = parseInt(req.query.pageSize || String(PAGE_SIZE), 10);
 
-    // Run both queries concurrently for efficiency
     const [users, countUsers] = await Promise.all([
       User.find()
         .skip(pageSize * (page - 1))
@@ -53,31 +39,21 @@ userRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: PUT /api/users/profile
-// DESCRIPTION: Allows authenticated users to update their own profile
-// ACCESS: Private (requires JWT via isAuth)
-// -------------------------------------------------------------
+// User profile update
 userRouter.put(
   '/profile',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    // req.user._id comes from JWT payload decoded in isAuth middleware
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).send({ message: 'User not found' });
 
-    // Update name and email if provided
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-
-    // If a new password is provided, hash it before saving
     if (req.body.password) {
       user.password = bcrypt.hashSync(req.body.password, 8);
     }
 
     const updatedUser = await user.save();
-
-    // Send updated user info + new token (refresh session)
     res.send({
       _id: updatedUser._id,
       name: updatedUser.name,
@@ -88,11 +64,7 @@ userRouter.put(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: DELETE /api/users/:id
-// DESCRIPTION: Admin deletes a user by ID
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
+// Delete user by ID (admin)
 userRouter.delete(
   '/:id',
   isAuth,
@@ -101,21 +73,15 @@ userRouter.delete(
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).send({ message: 'User Not Found' });
 
-    // Prevent deleting the root admin account
     if (user.email === 'admin@example.com') {
       return res.status(400).send({ message: 'Can Not Delete Admin User' });
     }
-
     await User.deleteOne({ _id: req.params.id });
     res.send({ message: 'User Deleted' });
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/users
-// DESCRIPTION: Admin-only route to fetch all users
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
+// Get all users (admin)
 userRouter.get(
   '/',
   isAuth,
@@ -126,11 +92,7 @@ userRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/users/:id
-// DESCRIPTION: Admin fetches specific user by ID
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
+// Get user by ID (admin)
 userRouter.get(
   '/:id',
   isAuth,
@@ -142,11 +104,7 @@ userRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: PUT /api/users/:id
-// DESCRIPTION: Admin updates user details
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
+// Update user by ID (admin)
 userRouter.put(
   '/:id',
   isAuth,
@@ -164,59 +122,23 @@ userRouter.put(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/users/signin
-// DESCRIPTION: Authenticates user credentials and returns JWT token
-// ACCESS: Public
-// -------------------------------------------------------------
+// User sign-in
 userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const email = String(req.body.email || '')
+      .trim()
+      .toLowerCase();
+    const password = String(req.body.password || '');
 
-    // Compare entered password with hashed password in DB
-    if (user && bcrypt.compareSync(req.body.password, user.password)) {
-      return res.send({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        token: generateToken(user), // JWT token for session
-      });
-    }
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).send({ message: 'Invalid email or password' });
 
-    // Invalid login credentials
-    res.status(401).send({ message: 'Invalid email or password' });
-  })
-);
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok)
+      return res.status(401).send({ message: 'Invalid email or password' });
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/users/signup
-// DESCRIPTION: Registers a new user with password validation
-// ACCESS: Public
-// -------------------------------------------------------------
-userRouter.post(
-  '/signup',
-  expressAsyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
-
-    // Enforce password complexity: 8+ chars, uppercase, lowercase, digit, special char
-    const passwordRegex =
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res
-        .status(400)
-        .send({ message: 'Password does not meet complexity requirements.' });
-    }
-
-    // Hash password before saving to DB
-    const hashedPassword = bcrypt.hashSync(password, 8);
-
-    // Create and save new user
-    const newUser = new User({ name, email, password: hashedPassword });
-    const user = await newUser.save();
-
-    // Return user info + token
     res.send({
       _id: user._id,
       name: user.name,
@@ -227,31 +149,57 @@ userRouter.post(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/users/forget-password
-// DESCRIPTION: Sends a password reset link to the user's email
-// ACCESS: Public
-// -------------------------------------------------------------
+// User sign-up
+userRouter.post(
+  '/signup',
+  expressAsyncHandler(async (req, res) => {
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '')
+      .trim()
+      .toLowerCase();
+    const password = String(req.body.password || '');
+
+    // Password complexity (8+ chars, upper, lower, digit, special)
+    const passwordRegex =
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res
+        .status(400)
+        .send({ message: 'Password does not meet complexity requirements.' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 8);
+
+    const newUser = new User({ name, email, password: hashedPassword });
+    const user = await newUser.save();
+
+    res.send({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token: generateToken(user),
+    });
+  })
+);
+
+// Forgot password (send reset link)
 userRouter.post(
   '/forget-password',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (!user) return res.status(404).send({ message: 'Email Not Found' });
 
-    // Generate JWT valid for 10 minutes
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '10m',
     });
 
-    // Store token temporarily in DB (requires `resetToken` field on user schema)
-    user.resetToken = token;
+    user.resetToken = token; // make sure model has this field (see notes)
     await user.save();
 
-    // Build password reset URL
     const url = `${baseUrl()}/reset-password/${token}`;
     console.log('Password reset URL:', url);
 
-    // Email content for reset link
     const emailContent = {
       from: 'profile.com',
       to: `${user.name} <${user.email}>`,
@@ -263,7 +211,6 @@ userRouter.post(
     };
 
     try {
-      // Send the email using Nodemailer
       await transporter.sendMail(emailContent);
       res.send({ message: 'We sent reset password link to your email.' });
     } catch (error) {
@@ -273,17 +220,12 @@ userRouter.post(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/users/reset-password
-// DESCRIPTION: Verifies the token and sets a new password
-// ACCESS: Public (token-based)
-// -------------------------------------------------------------
+// Reset password (verify token and set new password)
 userRouter.post(
   '/reset-password',
   expressAsyncHandler(async (req, res) => {
     const { password, token } = req.body;
 
-    // Validate password complexity again before updating
     const passwordRegex =
       /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -292,15 +234,12 @@ userRouter.post(
         .send({ message: 'Password does not meet complexity requirements.' });
     }
 
-    // Verify the reset token
     jwt.verify(token, process.env.JWT_SECRET, async (err) => {
       if (err) return res.status(401).send({ message: 'Invalid Token' });
 
-      // Find user associated with this token
       const user = await User.findOne({ resetToken: token });
       if (!user) return res.status(404).send({ message: 'User not found' });
 
-      // Hash and update new password
       user.password = bcrypt.hashSync(password, 8);
       user.resetToken = undefined; // clear used token
       await user.save();
@@ -310,7 +249,6 @@ userRouter.post(
   })
 );
 
-// -------------------------------------------------------------
-// Export router to be mounted in server.js
-// -------------------------------------------------------------
 export default userRouter;
+
+// If you want to review the commented teaching version of the userRoutes.js setup, check commit lesson-05.

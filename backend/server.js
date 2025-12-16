@@ -1,11 +1,10 @@
-// backend/server.js  (ES Modules)
+// backend/server.js
 // -------------------------------------------------------------
-// This file is the main entry point for the backend server.
-// It initializes Express, connects to MongoDB, loads routes,
-// handles middleware, and serves the Vite frontend in production.
+// This is the main entry point for our Express backend.
+// It connects to MongoDB, initializes middleware, and mounts
+// all API routes for the Portfolio project.
 // -------------------------------------------------------------
 
-// Core imports
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -13,59 +12,53 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-// Route imports
-import userRouter from './routes/userRoutes.js';
-import messageRouter from './routes/messageRoutes.js';
-// NOTE: If you have Website model/routes, import them here as well.
+// Import route files
+import seedRouter from './routes/seedRoutes.js'; // lesson 6
+import userRouter from './routes/userRoutes.js'; // lesson 5
+import messageRouter from './routes/messageRoutes.js'; // lesson 5
+import summaryRouter from './routes/summaryRoutes.js'; // lesson 6
+import websiteRouter from './routes/websiteRoutes.js'; // lesson 6
+import uploadRouter from './routes/uploadRoutes.js'; // lesson 6
+
+dotenv.config(); // Load environment variables from .env
 
 // -------------------------------------------------------------
-// Load environment variables from .env file
-// Example: MONGODB_URI, PORT, NODE_ENV, EMAIL credentials, etc.
+// 1️ Setup __dirname Equivalent for ESM
 // -------------------------------------------------------------
-dotenv.config();
-
-// -------------------------------------------------------------
-// __dirname and __filename equivalents for ES Modules
-// Node.js doesn’t provide them by default when using ESM syntax.
-// -------------------------------------------------------------
+// In ES Modules, __dirname is not available by default.
+// We recreate it using fileURLToPath + path.dirname.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // -------------------------------------------------------------
-// MongoDB Connection
-// Connect to MongoDB using Mongoose with URI from .env
+// 2️ Connect to MongoDB
 // -------------------------------------------------------------
+// The connection string is stored in .env (MONGODB_URI)
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((err) => console.error('❌ MongoDB connection error:', err.message));
-
-// -------------------------------------------------------------
-// Initialize Express App
-// -------------------------------------------------------------
 const app = express();
 
-// -------------------------------------------------------------
-// Middleware Setup
-// -------------------------------------------------------------
-// CORS: Allows frontend requests from different origins (e.g., Vite dev server)
-app.use(cors());
-
-// Parses incoming JSON payloads
-app.use(express.json());
-
-// Parses URL-encoded form submissions
-app.use(express.urlencoded({ extended: true }));
+app.use(cors()); // Enable cross-origin requests (frontend ↔ backend)
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 
 // -------------------------------------------------------------
-// API Routes
+// 4️ Mount All Route Modules
 // -------------------------------------------------------------
-app.use('/api/users', userRouter); // Authentication & user management
-app.use('/api/messages', messageRouter); // Contact form submissions
+app.use('/api/users', userRouter); // lesson 5
+app.use('/api/messages', messageRouter); // lesson 5
+app.use('/api/seed', seedRouter); // lesson 6
+app.use('/api/summary', summaryRouter); // lesson 6
+app.use('/api/website', websiteRouter); // lesson 6
+app.use('/api/upload', uploadRouter); // lesson 6
 
 // -------------------------------------------------------------
-// Example: Basic Website Listing Endpoint
-// You may replace this with a dedicated route file later.
+// 5️ (Optional) Legacy Endpoints for Quick Testing
+// -------------------------------------------------------------
+// These can be removed later since /api/website/search now
+// handles pagination and listing through websiteRoutes.js.
 // -------------------------------------------------------------
 app.get('/api/websites', async (_req, res) => {
   try {
@@ -76,24 +69,18 @@ app.get('/api/websites', async (_req, res) => {
   }
 });
 
-// -------------------------------------------------------------
-// Example: Paginated Website Search Endpoint
-// Matches the frontend call from Portfolio.jsx
-// URL: GET /api/websites/search?page=1&pageSize=10
-// -------------------------------------------------------------
 app.get('/api/websites/search', async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const pageSize = Math.max(parseInt(req.query.pageSize || '10', 10), 1);
 
-    const filter = {}; // add keyword or category filters later
-
+    const filter = {}; // Add keyword or category filters later
     const countWebsites = await Website.countDocuments(filter);
     const pages = Math.max(Math.ceil(countWebsites / pageSize), 1);
     const skip = (page - 1) * pageSize;
 
     const websites = await Website.find(filter)
-      .sort({ createdAt: -1 }) // show newest first
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(pageSize);
 
@@ -104,27 +91,27 @@ app.get('/api/websites/search', async (req, res) => {
 });
 
 // -------------------------------------------------------------
-// Static File Serving for Production
+// 6 Serve Frontend Build in Production
 // -------------------------------------------------------------
-// - During development (Vite), the frontend is served separately.
-// - In production, Express serves the built files from /frontend/dist.
+// In development, the Vite dev server handles the frontend.
+// In production, Express serves the built files from dist.
 // -------------------------------------------------------------
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.resolve(__dirname, '../frontend/dist');
   app.use(express.static(distPath));
-
-  // Catch-all route: send index.html for any unrecognized path
   app.get('*', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
 // -------------------------------------------------------------
-// Start the Server
+// 7 Start Server
 // -------------------------------------------------------------
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
 
+// If you want to review the commented teaching version of the server.js setup, check commit lesson-05.
 // lesson-05 added userRouter, messageRouter
+// lesson-06 added seedRouter, summaryRouter, websiteRouter, uploadRouter

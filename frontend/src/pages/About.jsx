@@ -13,10 +13,10 @@ export default function About() {
       </Helmet>
 
       <section className='container py-4'>
-        <h1 className='h2 mb-4'>About Me</h1>
-
+        <h1 className='box h2 mb-4'>About Me</h1>
+        <br />
         <div className='row g-4 align-items-start'>
-          <div className='col-12 col-md-6'>
+          <div className='box col-12 col-md-6'>
             <div className='mb-3'>
               <p>
                 [Your Name], a graduate from [Your School], builds web

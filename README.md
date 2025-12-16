@@ -215,3 +215,44 @@ git commit -m "5th Commit/lesson-Backend (ESM), Admin, Messages, MongoDB setup"
 git status (tells us that everything is committed "working tree clean" on main branch)
 git push
 Now you can check repository for updated code.
+
+# 6th Commit/lesson-Admin Signup, Signin, Messages, Upload seed data,
+
+BACKEND
+folder: models
+websiteModel.js > added
+userModel.js > updated
+
+folder: routes
+seedRoutes.js > added
+summaryRoutes.js > added
+uploadRoutes.js > added
+websiteRoutes.js > added
+userRoutes.js > updated
+
+data.js > added (seed the data)
+
+server.js > updated added 4 routes
+
+FRONTEND
+folder: components
+AdminPagination.jsx > added
+AdminRoute.jsx > added
+Header.jsx > updated
+
+folder: pages
+Messages.jsx > added
+
+subfolder: pages/forms (new)
+Signin.jsx > added
+Signup.jsx > added
+
+App.jsx > updated
+main.jsx > updated pages
+vite.config.js > updated
+
+{}package.json > updated
+npm install --force
+nvm use 20
+npm run dev
+http://localhost:5173/

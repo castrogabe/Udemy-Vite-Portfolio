@@ -1,18 +1,29 @@
-// src/components/Header.jsx
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+// NEW: useLocation added to preserve redirect target after login lesson 6
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { Store } from '../Store';
 
-export default function Header({ userInfo: propUser }) {
-  // Optional: read from localStorage if no prop is passed
-  const userInfo =
-    propUser ?? JSON.parse(localStorage.getItem('userInfo') || 'null');
+export default function Header() {
+  // NEW: using Store context instead of propUser for global state
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { userInfo } = state;
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navLink = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 
   const signoutHandler = () => {
+    ctxDispatch({ type: 'USER_SIGNOUT' });
     localStorage.removeItem('userInfo');
     navigate('/signin');
   };
+
+  // NEW: Redirect-aware sign-in link
+  // send users back to where they started after signin
+  const signInHref = `/signin?redirect=${encodeURIComponent(
+    location.pathname + location.search
+  )}`;
 
   return (
     <header>
@@ -35,28 +46,52 @@ export default function Header({ userInfo: propUser }) {
           </button>
 
           <div className='collapse navbar-collapse' id='mainNavbar'>
-            <ul className='navbar-nav ms-auto align-items-lg-center'>
+            <ul className='navbar-nav ms-auto w-100 justify-content-end align-items-lg-center'>
+              {/* UPDATED: "About Us" is now a dropdown with multiple internal links */}
               {/* lesson 4 */}
-              <li className='nav-item'>
-                <NavLink to='/about' className={navLink}>
-                  <i className='fas fa-briefcase' aria-hidden='true' /> About Us
-                </NavLink>
+              <li className='nav-item dropdown'>
+                <button
+                  className='nav-link dropdown-toggle'
+                  id='aboutDropdown'
+                  data-bs-toggle='dropdown'
+                  aria-expanded='false'
+                  type='button'
+                >
+                  About Us
+                </button>
+                <ul className='dropdown-menu' aria-labelledby='aboutDropdown'>
+                  <li>
+                    <Link className='dropdown-item' to='/about'>
+                      About Us
+                    </Link>
+                  </li>
+
+                  {/* lesson 6 */}
+                  <li>
+                    <Link className='dropdown-item' to='/contact'>
+                      Contact Us
+                    </Link>
+                  </li>
+                </ul>
               </li>
+
               <li className='nav-item'>
                 <NavLink to='/portfolio' className={navLink}>
                   <i className='fas fa-briefcase' aria-hidden='true' />{' '}
                   Portfolio
                 </NavLink>
               </li>
+
+              {/* UPDATED: route renamed from '/design' → '/webdesign' */}
               <li className='nav-item'>
-                <NavLink to='/design' className={navLink}>
+                <NavLink to='/webdesign' className={navLink}>
                   <i className='fas fa-layer-group' aria-hidden='true' /> Web
                   Design
                 </NavLink>
               </li>
               {/* end lesson 4 */}
 
-              {/* Auth menu pages added later*/}
+              {/* User Menu lesson 6 */}
               {userInfo ? (
                 <li className='nav-item dropdown'>
                   <button
@@ -77,6 +112,7 @@ export default function Header({ userInfo: propUser }) {
                         Profile
                       </Link>
                     </li>
+
                     <li>
                       <hr className='dropdown-divider' />
                     </li>
@@ -91,15 +127,16 @@ export default function Header({ userInfo: propUser }) {
                   </ul>
                 </li>
               ) : (
+                // lesson 6
                 <li className='nav-item'>
-                  <NavLink to='/signin' className={navLink}>
+                  <NavLink to={signInHref} className={navLink}>
                     <i className='fas fa-sign-in-alt' aria-hidden='true' /> Sign
                     In
                   </NavLink>
                 </li>
               )}
 
-              {/* Admin menu pages added later */}
+              {/* Admin menu */}
               {userInfo?.isAdmin && (
                 <li className='nav-item dropdown'>
                   <button
@@ -120,16 +157,20 @@ export default function Header({ userInfo: propUser }) {
                         Website Dashboard
                       </Link>
                     </li>
+
                     <li>
                       <Link className='dropdown-item' to='/admin/users'>
                         Users
                       </Link>
                     </li>
+
                     <li>
                       <Link className='dropdown-item' to='/admin/websites'>
                         Websites
                       </Link>
                     </li>
+
+                    {/* lesson 6 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/messages'>
                         Messages
@@ -147,3 +188,10 @@ export default function Header({ userInfo: propUser }) {
 }
 
 // If you want to review the commented teaching version of the Header.jsx setup, check commit lesson-04.
+
+// Lesson 6 updates summary:
+// • Replaced prop-based userInfo with Context from Store
+// • Added redirect-aware sign-in links
+// • Converted “About Us” link into a dropdown
+// • Changed /design → /webdesign
+// • Using Contact/Messages
