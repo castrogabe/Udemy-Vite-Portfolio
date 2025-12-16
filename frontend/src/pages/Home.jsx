@@ -1,30 +1,13 @@
-// src/pages/Home.jsx
-// -------------------------------------------------------------
-// The Home page introduces visitors to the portfolio.
-// It uses Helmet for SEO, a custom Jumbotron component for
-// the animated hero text, and semantic sections to outline services.
-// -------------------------------------------------------------
-
 import React from 'react';
-import { Helmet } from 'react-helmet-async'; // Sets page title and meta tags dynamically
-import Jumbotron from '../components/Jumbotron'; // Custom animated hero/banner component
+import { Helmet } from 'react-helmet-async';
+import Jumbotron from '../components/Jumbotron';
 
 export default function Home() {
   return (
     <>
-      {/* -------------------------------------------------------------
-        Helmet Section:
-        Sets the browser tab title and improves SEO.
-      ------------------------------------------------------------- */}
       <Helmet>
         <title>Portfolio Home</title>
       </Helmet>
-
-      {/* -------------------------------------------------------------
-        Jumbotron Component:
-        Displays dynamic typewriter text to introduce your roles or skills.
-        - text: array of phrases to cycle through.
-      ------------------------------------------------------------- */}
       <Jumbotron
         text={[
           'Web Developer',
@@ -32,19 +15,9 @@ export default function Home() {
           'React + Vite Enthusiast',
         ]}
       />
-
       <br />
-
-      {/* -------------------------------------------------------------
-        Main Content:
-        Wrapped in a container-style "content" div for consistent layout.
-      ------------------------------------------------------------- */}
       <div className='content'>
         <div className='box'>
-          {/* -------------------------------------------------------------
-            Section 1: Overview of Web Development
-            Emphasizes how your services help clients grow online.
-          ------------------------------------------------------------- */}
           <h4>The Website Development Process and Basic Languages Used</h4>
           <p>
             With half the world population online and using the internet, my
@@ -54,13 +27,8 @@ export default function Home() {
             <strong> SEO</strong> Search Engine Optimization to help market your
             internet business.
           </p>
-
           <br />
 
-          {/* -------------------------------------------------------------
-            Section 2: Why Choose My Services
-            Uses a list to highlight your unique selling points.
-          ------------------------------------------------------------- */}
           <h4>Why Choose My Web Design and Hosting Services?</h4>
           <p>
             A striking and well-organized web page layout will greatly enhance
@@ -79,13 +47,8 @@ export default function Home() {
             Hiring me means you’ll have a professional, user-friendly website
             that’s optimized for both performance and aesthetics.
           </p>
-
           <br />
 
-          {/* -------------------------------------------------------------
-            Section 3: Getting Started Steps
-            Breaks down how you work with clients into actionable steps.
-          ------------------------------------------------------------- */}
           <h4>Need Help Building or Updating Your Website?</h4>
           <p>
             Whether you’re building a new site or updating an existing one, I’m
@@ -100,18 +63,12 @@ export default function Home() {
             <strong>Step 3:</strong> Let’s collaborate to bring your vision to
             life with professional web development and agile methodologies.
           </p>
-
           <p>
             Building a site isn’t easy, but with my expertise, we can create a
             site that meets all your needs and exceeds your expectations.
           </p>
-
           <br />
 
-          {/* -------------------------------------------------------------
-            Section 4: Call to Action
-            Encourages visitors to reach out using the contact page.
-          ------------------------------------------------------------- */}
           <h4>Ready to Get Started?</h4>
           <p>
             Let’s discuss your project and how we can work together to achieve
@@ -120,13 +77,8 @@ export default function Home() {
               Contact Me Today
             </a>
           </p>
-
           <br />
 
-          {/* -------------------------------------------------------------
-            Section 5: Testimonials
-            Adds credibility with client quotes.
-          ------------------------------------------------------------- */}
           <h4>What My Clients Say</h4>
           <p>
             "Working with [Your Name] has been a game-changer for our business.
@@ -139,13 +91,8 @@ export default function Home() {
             table made the entire development process smooth and efficient.
             Highly recommend!" - <em>Satisfied Customer</em>
           </p>
-
           <br />
 
-          {/* -------------------------------------------------------------
-            Section 6: Portfolio Link
-            Directs users to view past work to build trust.
-          ------------------------------------------------------------- */}
           <h4>Explore My Portfolio</h4>
           <p>
             Take a look at some of the projects I’ve worked on to get a sense of
@@ -155,9 +102,10 @@ export default function Home() {
             </a>
           </p>
         </div>
-
         <br />
       </div>
     </>
   );
 }
+
+// If you want to review the commented teaching version of the Contact.jsx setup, check commit lesson-03.
