@@ -1,18 +1,3 @@
-// -------------------------------------------------------------
-// Messages.jsx — Admin Inbox Page
-// -------------------------------------------------------------
-// This screen lets an admin view, delete, and reply to contact messages
-// submitted through the website form.
-//
-// Concepts covered:
-// useReducer for complex state
-// useContext to access global Store (userInfo)
-// useEffect for data fetching
-// toast notifications for success/error
-// protected API routes using Bearer token
-// conditional rendering for loading/error/reply form
-// -------------------------------------------------------------
-
 import { useEffect, useContext, useState, useReducer } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Store } from '../Store';
@@ -23,20 +8,14 @@ import MessageBox from '../components/MessageBox.jsx';
 import { getError } from '../utils';
 import AdminPagination from '../components/AdminPagination.jsx'; // ensure filename matches
 
-// -------------------------------------------------------------
-// Helper: fetchJSON()
-// -------------------------------------------------------------
-// A small wrapper for fetch that automatically:
-// - parses JSON responses
-// - throws a readable error message if the response isn’t OK
-// -------------------------------------------------------------
+// ---- helpers ----
 async function fetchJSON(url, options = {}) {
   const res = await fetch(url, options);
   let body = null;
   try {
     body = await res.json();
   } catch {
-    // If body isn’t JSON, ignore (still may have succeeded)
+    // non-JSON or empty body is fine
   }
   if (!res.ok) {
     const msg = body?.message || `HTTP ${res.status}`;
@@ -45,12 +24,7 @@ async function fetchJSON(url, options = {}) {
   return body;
 }
 
-// -------------------------------------------------------------
-// Reducer
-// -------------------------------------------------------------
-// Centralizes all loading/error/success states for fetch + delete actions.
-// Makes the component predictable and easier to debug.
-// -------------------------------------------------------------
+// ---- reducer ----
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
@@ -68,7 +42,6 @@ const reducer = (state, action) => {
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
 
-    // Delete lifecycle
     case 'DELETE_REQUEST':
       return { ...state, loadingDelete: true, successDelete: false };
     case 'DELETE_SUCCESS':
@@ -82,20 +55,14 @@ const reducer = (state, action) => {
   }
 };
 
-// -------------------------------------------------------------
-// Component: Messages
-// -------------------------------------------------------------
 export default function Messages() {
-  // Current page number from URL query (?page=)
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
   const page = Number(sp.get('page') || 1);
 
-  // Get user info (token, isAdmin, etc.) from global Store
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // Local reducer-managed state
   const [
     {
       loading,
@@ -115,7 +82,6 @@ export default function Messages() {
     pages: 1,
   });
 
-  // Local UI state for reply form
   const [replyVisible, setReplyVisible] = useState(false);
   const [replyMessage, setReplyMessage] = useState({
     fullName: '',
@@ -125,12 +91,6 @@ export default function Messages() {
     replyContent: '',
   });
 
-  // -----------------------------------------------------------
-  // sendReply()
-  // -----------------------------------------------------------
-  // Sends a reply email through the backend.
-  // The backend route /api/messages/reply uses Nodemailer.
-  // -----------------------------------------------------------
   const sendReply = async (e) => {
     e.preventDefault();
     try {
@@ -153,9 +113,6 @@ export default function Messages() {
     }
   };
 
-  // -----------------------------------------------------------
-  // Fetch messages list (with pagination)
-  // -----------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -169,7 +126,6 @@ export default function Messages() {
       }
     };
 
-    // After deleting, reset and re-fetch
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
     } else {
@@ -177,9 +133,6 @@ export default function Messages() {
     }
   }, [page, userInfo, successDelete]);
 
-  // -----------------------------------------------------------
-  // Delete a single message
-  // -----------------------------------------------------------
   const deleteHandler = async (messageToDelete) => {
     if (!window.confirm('Are you sure to delete?')) return;
     try {
@@ -190,15 +143,15 @@ export default function Messages() {
       });
       toast.success('Message deleted successfully', { autoClose: 1500 });
       dispatch({ type: 'DELETE_SUCCESS' });
+      // Optimistic local update
+      // (or let the effect re-fetch after successDelete flips)
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: 'DELETE_FAIL' });
     }
   };
 
-  // -----------------------------------------------------------
-  // Format helper (MM-DD-YYYY)
-  // -----------------------------------------------------------
+  // MM-DD-YYYY
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -207,37 +160,11 @@ export default function Messages() {
     return `${mm}-${dd}-${yyyy}`;
   };
 
-  // -----------------------------------------------------------------------------
-  // NOTE ABOUT LoadingBox (LESSON 6)
-
-  // This page fetches messages asynchronously from the backend.
-
-  // Why we need LoadingBox here:
-  // - The messages table depends entirely on server data
-  // - Each row includes action buttons (Reply / Delete)
-  // - Pagination requires valid totals and page counts
-
-  // If we rendered the table immediately:
-  // - The table could appear empty
-  // - Buttons might reference invalid message IDs
-  // - The UI would feel unstable or confusing
-
-  // LoadingBox ensures the admin only sees the table
-  // AFTER the messages data has finished loading.
-
-  // Later lessons will replace LoadingBox with Skeleton tables,
-  // but the conditional rendering logic remains the same.
-  // -----------------------------------------------------------------------------
-
-  // -----------------------------------------------------------
-  // Render UI
-  // -----------------------------------------------------------
   return (
     <>
       <Helmet>
         <title>Messages</title>
       </Helmet>
-
       <div className='content'>
         <br />
         <h4 className='box'>
@@ -247,6 +174,7 @@ export default function Messages() {
 
         <div className='box'>
           {loadingDelete && <LoadingBox />}
+
           {loading ? (
             <LoadingBox />
           ) : error ? (
@@ -280,7 +208,6 @@ export default function Messages() {
                         />
                       </td>
                       <td className='text-nowrap'>
-                        {/* Reply button populates form with user details */}
                         <button
                           type='button'
                           className='btn btn-primary btn-sm'
@@ -297,7 +224,6 @@ export default function Messages() {
                         >
                           Reply
                         </button>{' '}
-                        {/* Delete button triggers confirmation + reducer */}
                         <button
                           type='button'
                           className='btn btn-danger btn-sm'
@@ -314,9 +240,7 @@ export default function Messages() {
           )}
         </div>
 
-        {/* -----------------------------------------------------
-            Reply Form (conditionally rendered)
-        ----------------------------------------------------- */}
+        {/* Reply Form */}
         {replyVisible && (
           <div className='box'>
             <h2>Reply Email to: {replyMessage.fullName}</h2>
@@ -363,7 +287,6 @@ export default function Messages() {
           </div>
         )}
 
-        {/* Pagination (shared admin component) */}
         <AdminPagination
           currentPage={page}
           totalPages={pages}
@@ -375,3 +298,5 @@ export default function Messages() {
     </>
   );
 }
+
+// If you want to review the commented teaching version of the Messages.jsx setup, check commit lesson-06.

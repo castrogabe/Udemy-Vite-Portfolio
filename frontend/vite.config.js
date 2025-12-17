@@ -23,3 +23,4 @@ export default defineConfig({
 });
 
 // If you want to review the commented teaching version of the vite.config setup, check commit lesson-05.
+// updated lesson-06

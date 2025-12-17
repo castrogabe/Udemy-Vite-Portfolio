@@ -118,4 +118,4 @@ messageRouter.post(
 
 export default messageRouter;
 
-// If you want to review the commented teaching version of the messageRoutes.js setup, check commit lesson-05.
+// If you want to review the commented teaching version of the seed messageRoutes.js setup, check commit lesson-06.

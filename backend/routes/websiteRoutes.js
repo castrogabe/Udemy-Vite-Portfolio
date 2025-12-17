@@ -1,27 +1,11 @@
-// backend/routes/websiteRoutes.js
-// -------------------------------------------------------------
-// This file defines all CRUD routes for managing Website data.
-// It connects the Website model to the Express API.
-// -------------------------------------------------------------
-//
-// Features covered:
-// ✅ Public routes for viewing websites
-// ✅ Admin routes for creating, updating, and deleting websites
-// ✅ Pagination for both admin and frontend use
-// -------------------------------------------------------------
-
+// backend/routes/websiteRoutes.js (ESM)
 import express from 'express';
 import Website from '../models/websiteModel.js';
 import { isAuth, isAdmin } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 
-// Initialize Express Router
 const websiteRouter = express.Router();
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/websites
-// DESCRIPTION: Fetch all websites (public access)
-// -------------------------------------------------------------
 websiteRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
@@ -30,37 +14,25 @@ websiteRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/websites
-// DESCRIPTION: Admin route to create a placeholder website
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
 websiteRouter.post(
   '/',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    // Default template object for a new website entry
     const newWebsite = new Website({
-      name: String(Date.now()), // Temporary unique name
-      slug: String(Date.now()), // Temporary slug
-      image: '/images/', // Placeholder image
+      name: String(Date.now()),
+      slug: String(Date.now()),
+      image: '/images/',
       language: 'MERN Stack',
       languageDescription: 'MongoDB, Express, AngularJS, Node.js',
       description: 'description',
       link: 'https://www.domain.com',
     });
-
     const website = await newWebsite.save();
     res.send({ message: 'Website Created', website });
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: PUT /api/websites/:id
-// DESCRIPTION: Admin route to update a website by ID
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
 websiteRouter.put(
   '/:id',
   isAuth,
@@ -69,7 +41,6 @@ websiteRouter.put(
     const website = await Website.findById(req.params.id);
     if (!website) return res.status(404).send({ message: 'Website Not Found' });
 
-    // Update website fields
     website.name = req.body.name;
     website.slug = req.body.slug;
     website.image = req.body.image;
@@ -83,11 +54,6 @@ websiteRouter.put(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: DELETE /api/websites/:id
-// DESCRIPTION: Admin route to delete a website by ID
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
 websiteRouter.delete(
   '/:id',
   isAuth,
@@ -96,21 +62,13 @@ websiteRouter.delete(
     const website = await Website.findById(req.params.id);
     if (!website) return res.status(404).send({ message: 'Website Not Found' });
 
-    await website.deleteOne(); // modern replacement for .remove()
+    await website.deleteOne(); // modern replacement for remove()
     res.send({ message: 'Website Deleted' });
   })
 );
 
-// -------------------------------------------------------------
-// Pagination setup
-// -------------------------------------------------------------
 const PAGE_SIZE = 10;
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/websites/admin
-// DESCRIPTION: Paginated list for admin dashboard
-// ACCESS: Private/Admin
-// -------------------------------------------------------------
 websiteRouter.get(
   '/admin',
   isAuth,
@@ -134,11 +92,6 @@ websiteRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/websites/search
-// DESCRIPTION: Paginated search results for frontend Portfolio.jsx
-// ACCESS: Public
-// -------------------------------------------------------------
 websiteRouter.get(
   '/search',
   expressAsyncHandler(async (req, res) => {
@@ -160,11 +113,6 @@ websiteRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/websites/slug/:slug
-// DESCRIPTION: Fetch website by slug (used for SEO-friendly URLs)
-// ACCESS: Public
-// -------------------------------------------------------------
 websiteRouter.get(
   '/slug/:slug',
   expressAsyncHandler(async (req, res) => {
@@ -174,11 +122,6 @@ websiteRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/websites/:id
-// DESCRIPTION: Fetch website by MongoDB _id
-// ACCESS: Public
-// -------------------------------------------------------------
 websiteRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
@@ -188,8 +131,6 @@ websiteRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// Export router to be mounted in server.js as:
-// app.use('/api/websites', websiteRouter);
-// -------------------------------------------------------------
 export default websiteRouter;
+
+// If you want to review the commented teaching version of the websiteRoutes.js setup, check commit lesson-05.

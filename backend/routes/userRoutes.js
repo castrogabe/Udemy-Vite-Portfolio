@@ -12,6 +12,7 @@ import {
 } from '../utils.js';
 
 const userRouter = express.Router();
+
 const PAGE_SIZE = 12; // 12 items per page
 
 // Admin route to get paginated list of users

@@ -1,10 +1,9 @@
-// NEW: useLocation added to preserve redirect target after login lesson 6
+// src/components/Header.jsx
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { Store } from '../Store';
 
 export default function Header() {
-  // NEW: using Store context instead of propUser for global state
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
@@ -47,7 +46,6 @@ export default function Header() {
 
           <div className='collapse navbar-collapse' id='mainNavbar'>
             <ul className='navbar-nav ms-auto w-100 justify-content-end align-items-lg-center'>
-              {/* UPDATED: "About Us" is now a dropdown with multiple internal links */}
               {/* lesson 4 */}
               <li className='nav-item dropdown'>
                 <button
@@ -74,6 +72,7 @@ export default function Header() {
                   </li>
                 </ul>
               </li>
+              {/* end lesson 4 */}
 
               <li className='nav-item'>
                 <NavLink to='/portfolio' className={navLink}>
@@ -82,14 +81,13 @@ export default function Header() {
                 </NavLink>
               </li>
 
-              {/* UPDATED: route renamed from '/design' → '/webdesign' */}
+              {/* Web Design (use your preferred route) */}
               <li className='nav-item'>
                 <NavLink to='/webdesign' className={navLink}>
                   <i className='fas fa-layer-group' aria-hidden='true' /> Web
                   Design
                 </NavLink>
               </li>
-              {/* end lesson 4 */}
 
               {/* User Menu lesson 6 */}
               {userInfo ? (
@@ -107,6 +105,7 @@ export default function Header() {
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='userDropdown'
                   >
+                    {/* lesson 7 */}
                     <li>
                       <Link className='dropdown-item' to='/profile'>
                         Profile
@@ -152,6 +151,7 @@ export default function Header() {
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='adminDropdown'
                   >
+                    {/* lesson 7 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/dashboard'>
                         Website Dashboard
@@ -195,3 +195,5 @@ export default function Header() {
 // • Converted “About Us” link into a dropdown
 // • Changed /design → /webdesign
 // • Using Contact/Messages
+
+// lesson-7 using Dashboard/Profile

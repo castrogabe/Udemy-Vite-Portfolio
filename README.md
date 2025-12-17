@@ -216,7 +216,7 @@ git status (tells us that everything is committed "working tree clean" on main b
 git push
 Now you can check repository for updated code.
 
-# 6th Commit/lesson-Admin Signup, Signin, Messages, Upload seed data,
+# 6th Commit/lesson-Admin Signup, Signin, Messages, Upload seed data
 
 BACKEND
 folder: models
@@ -256,3 +256,23 @@ npm install --force
 nvm use 20
 npm run dev
 http://localhost:5173/
+
+# 7th Commit/lesson-Profile, ForgetPassword, ResetPassword
+
+FRONTEND
+npm i react-react-google-charts --force
+
+folder: components
+ProtectedRoute.jsx > added
+
+folder: pages
+Dashboard.jsx > added
+Header.jsx > comments added by lesson number
+
+subfolder: forms
+ForgetPassword.jsx > added
+Profile.jsx > added
+ResetPassword.jsx > added
+
+main.jsx > updated with new pages
+{}package.json > updated

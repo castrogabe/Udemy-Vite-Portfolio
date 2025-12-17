@@ -10,17 +10,24 @@ import { StoreProvider } from './Store.jsx';
 
 // admin pages
 import AdminRoute from './components/AdminRoute.jsx'; // lesson 5
+import Dashboard from './pages/Dashboard.jsx'; // lesson 7
 import Messages from './pages/Messages.jsx'; // lesson 6
 
 // pages
 import Home from './pages/Home.jsx'; // lesson 3
 import About from './pages/About.jsx'; // lesson 3
-import Design from './pages/Design.jsx'; // lesson 3
-import Portfolio from './pages/Portfolio.jsx'; // lesson 3 <- rename file if needed
+import Design from './pages/Design.jsx'; // lesson 4
+import Portfolio from './pages/Portfolio.jsx'; // lesson 3
 import Contact from './pages/Contact.jsx'; // lesson 4
 import Signin from './pages/forms/Signin.jsx'; // lesson 6
 import Signup from './pages/forms/Signup.jsx'; // lesson 6
+import Profile from './pages/forms/Profile.jsx'; // lesson 7
+import ForgetPassword from './pages/forms/ForgetPassword.jsx'; // lesson 7
+import ResetPassword from './pages/forms/ResetPassword.jsx'; // lesson 7
 import NotFound from './pages/NotFound.jsx';
+
+// user protected pages
+import ProtectedRoute from './components/ProtectedRoute.jsx'; // lesson 7
 
 const router = createBrowserRouter([
   {
@@ -30,17 +37,37 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> }, // lesson 3
       { path: 'about', element: <About /> }, // lesson 3
-      { path: 'design', element: <Design /> }, // lesson 3
-      { path: 'portfolio', element: <Portfolio /> }, // lesson 3 <- rename file if needed
+      { path: 'design', element: <Design /> }, // lesson 4
+      { path: 'portfolio', element: <Portfolio /> }, // lesson 3
       { path: 'contact', element: <Contact /> }, // lesson 4
       { path: 'signin', element: <Signin /> }, // lesson 6
       { path: 'signup', element: <Signup /> }, // lesson 6
+      { path: 'forgot-password', element: <ForgetPassword /> }, // lesson 7
+
+      // Protected Route
+      { path: 'reset-password/:token', element: <ResetPassword /> }, // lesson 7
+      {
+        path: 'profile', // lesson 7
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
       // admin route
       {
         path: 'admin/messages', // lesson 6
         element: (
           <AdminRoute>
             <Messages />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'admin/dashboard', // lesson 7
+        element: (
+          <AdminRoute>
+            <Dashboard />
           </AdminRoute>
         ),
       },
@@ -59,6 +86,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 );
 
 // If you want to review the commented teaching version of the main.jsx setup, check commit lesson-04.
-// lesson 3 added Home, About, Design, Portfolio
-// lesson 4 added contact
+// lesson 3 added Home, About, Portfolio
+// lesson 4 added Contact, Design
 // lesson 6 added Signin, Signup, Messages
+// lesson 7 added Dashboard, Profile, ResetPassword, ForgetPassword
