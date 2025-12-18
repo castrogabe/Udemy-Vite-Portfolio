@@ -1,73 +1,36 @@
-// ---------------------------------------------------------------------------
-// Profile.jsx — Lesson 7
-// ---------------------------------------------------------------------------
-// This page allows logged-in users to update their own:
-//
-//   • Name
-//   • Email
-//   • Password (optional)
-//
-// Key Concepts Demonstrated:
-//
-//   ✓ Using useContext to access global userInfo
-//   ✓ Using useReducer for request loading state
-//   ✓ Using useMemo to compute "passwords mismatch"
-//   ✓ Updating user info in localStorage and global Store
-//   ✓ Conditionally sending the password only when changed
-//   ✓ show/hide password toggles for both fields
-//
-// IMPORTANT:
-// The backend route for this is:
-//   PUT /api/users/profile   (requires auth token)
-// ---------------------------------------------------------------------------
-
 import { useContext, useReducer, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../../Store';
 import { toast } from 'react-toastify';
 import { getError } from '../../utils';
 
-// ---------------------------------------------------------------------------
-// Reducer for managing update request states
-// ---------------------------------------------------------------------------
 const reducer = (state, action) => {
   switch (action.type) {
     case 'UPDATE_REQUEST':
       return { ...state, loadingUpdate: true };
-
-    // Both success and failure stop the loading spinner
     case 'UPDATE_SUCCESS':
     case 'UPDATE_FAIL':
       return { ...state, loadingUpdate: false };
-
     default:
       return state;
   }
 };
 
 export default function Profile() {
-  // Access user info from global Store
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
-  // Pre-fill fields from existing userInfo
   const [name, setName] = useState(userInfo?.name || '');
   const [email, setEmail] = useState(userInfo?.email || '');
-
-  // Passwords (optional)
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  // Visibility toggles
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Local reducer for tracking request state
   const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
   });
 
-  // Whether new passwords fail to match
   const passwordsMismatch = useMemo(
     () =>
       (password.length > 0 || confirmPassword.length > 0) &&
@@ -75,49 +38,39 @@ export default function Profile() {
     [password, confirmPassword]
   );
 
-  // -------------------------------------------------------------------------
-  // Submit handler — sends updated fields to backend
-  // -------------------------------------------------------------------------
   const submitHandler = async (e) => {
     e.preventDefault();
-
     if (passwordsMismatch) {
       toast.error('Passwords do not match');
       return;
     }
-
     try {
       dispatch({ type: 'UPDATE_REQUEST' });
 
-      // Only send password if user typed one
       const body = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
       };
       if (password) body.password = password;
 
-      // Call backend route
       const res = await fetch('/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userInfo.token}`, // Auth required
+          Authorization: `Bearer ${userInfo.token}`,
         },
         body: JSON.stringify(body),
       });
 
-      // Parse response safely
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
 
-      // Success: update global userInfo
       dispatch({ type: 'UPDATE_SUCCESS' });
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
-
       toast.success('User updated successfully', { autoClose: 1000 });
 
-      // Clear password fields after successful update
+      // clear password fields after success
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -128,42 +81,16 @@ export default function Profile() {
     }
   };
 
-  // -----------------------------------------------------------------------------
-  // NOTE ABOUT Loading States (IMPORTANT FOR STUDENTS)
-
-  // This page does NOT use <LoadingBox /> on initial render.
-
-  // Why?
-  // - User data already exists in global Store (userInfo)
-  // - No backend fetch is required when the page loads
-  // - The form can safely render immediately
-
-  // Instead, loading feedback is shown ONLY during submission
-  // using a button-level spinner (loadingUpdate).
-
-  // This demonstrates that loading UI should be:
-  // - contextual
-  // - minimal
-  // - applied only where necessary
-  // -----------------------------------------------------------------------------
-
-  // -------------------------------------------------------------------------
-  // Render UI
-  // -------------------------------------------------------------------------
   return (
     <div className='content'>
       <Helmet>
         <title>User Profile</title>
       </Helmet>
-
       <br />
       <h4 className='box'>User Profile</h4>
 
       <div className='box' style={{ maxWidth: 640 }}>
         <form onSubmit={submitHandler} noValidate>
-          {/* --------------------------------------------------------------- */}
-          {/* Name                                                           */}
-          {/* --------------------------------------------------------------- */}
           <div className='mb-3'>
             <label htmlFor='name' className='form-label'>
               Name
@@ -178,9 +105,6 @@ export default function Profile() {
             />
           </div>
 
-          {/* --------------------------------------------------------------- */}
-          {/* Email                                                          */}
-          {/* --------------------------------------------------------------- */}
           <div className='mb-3'>
             <label htmlFor='email' className='form-label'>
               Email
@@ -196,14 +120,10 @@ export default function Profile() {
             />
           </div>
 
-          {/* --------------------------------------------------------------- */}
-          {/* New Password (optional)                                        */}
-          {/* --------------------------------------------------------------- */}
           <div className='mb-3'>
             <label htmlFor='password' className='form-label'>
               New Password
             </label>
-
             <div className='input-group'>
               <input
                 id='password'
@@ -227,14 +147,10 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* --------------------------------------------------------------- */}
-          {/* Confirm Password                                                */}
-          {/* --------------------------------------------------------------- */}
           <div className='mb-3'>
             <label htmlFor='confirmPassword' className='form-label'>
               Confirm New Password
             </label>
-
             <div className='input-group'>
               <input
                 id='confirmPassword'
@@ -251,7 +167,6 @@ export default function Profile() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete='new-password'
               />
-
               <button
                 type='button'
                 className='btn btn-outline-secondary'
@@ -269,8 +184,6 @@ export default function Profile() {
                 />
               </button>
             </div>
-
-            {/* Validation feedback */}
             {confirmPassword.length > 0 && passwordsMismatch && (
               <div className='invalid-feedback' style={{ display: 'block' }}>
                 Passwords do not match
@@ -278,9 +191,6 @@ export default function Profile() {
             )}
           </div>
 
-          {/* --------------------------------------------------------------- */}
-          {/* Submit button with loading spinner                             */}
-          {/* --------------------------------------------------------------- */}
           <div className='mb-3 d-grid'>
             <button
               type='submit'
@@ -306,3 +216,5 @@ export default function Profile() {
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the Profile.jsx setup, check commit lesson-07.

@@ -276,3 +276,17 @@ ResetPassword.jsx > added
 
 main.jsx > updated with new pages
 {}package.json > updated
+
+# 8th Commit/lesson-Admin, Users
+
+FRONTEND
+folder: components
+AdminPagination.jsx > updated
+
+folder: pages > subfolder > admin
+Dashboard.jsx > moved into admin subfolder
+Messages.jsx > moved into admin subfolder
+UserEdit.jsx > added
+UserList.jsx > added
+
+main.jsx > updated, pages > added admin pages, updated forms
