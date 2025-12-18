@@ -302,3 +302,50 @@ WebsiteEdit.jsx > added
 WebsiteList.jsx > added
 
 main.jsx > updated with WebsiteList.jsx, WebsiteEdit.jsx
+
+# 10th Commit/lesson-Image upload
+
+BACKEND
+folder: routes
+uploadRoutes.js > updated
+
+uploads folder added in root (images)
+
+server.js > updated with uploads
+
+FRONTEND
+public
+site.webmanifest > added
+{
+// Full name of the app as it appears on install prompts
+"name": "My Portfolio",
+
+// Short name shown under the app icon when installed
+"short_name": "Portfolio",
+
+// The URL that loads when the app is opened from home screen
+"start_url": "/",
+
+// "standalone" makes the site open like a mobile app
+// (no browser UI, no address bar)
+"display": "standalone",
+
+// Icons used when installed as a PWA.
+// Empty for now — you can add 192x192 and 512x512 icons later.
+"icons": []
+}
+
+folder: public
+images > added
+
+folder: components
+WebsiteCard.jsx > updated
+
+folder: pages/admin
+WebsiteEdit.jsx > updated
+WebsiteList.jsx > updated
+
+styles > portfolio.css > updated for images
+
+utils.jsx > updated
+vite.config > updated

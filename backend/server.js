@@ -13,6 +13,7 @@ import messageRouter from './routes/messageRoutes.js'; // lesson 5
 import summaryRouter from './routes/summaryRoutes.js'; // lesson 6
 import websiteRouter from './routes/websiteRoutes.js'; // lesson 6 <= updated lesson 9
 import uploadRouter from './routes/uploadRoutes.js'; // lesson 6
+import fs from 'node:fs'; // lesson 10
 
 dotenv.config();
 
@@ -31,6 +32,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// uploads lesson-10
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+app.use('/uploads', express.static(uploadDir));
 
 // routes
 app.use('/api/users', userRouter); // lesson 5
@@ -95,3 +101,4 @@ app.listen(port, () => {
 // lesson-05 added userRouter, messageRouter
 // lesson-06 added seedRouter, summaryRouter, websiteRouter, uploadRouter
 // lesson-09 updated from website
+// lesson-10 /uploads
