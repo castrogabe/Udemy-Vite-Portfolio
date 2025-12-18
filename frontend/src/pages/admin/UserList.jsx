@@ -1,23 +1,3 @@
-// -------------------------------------------------------------
-// UserList.jsx — Admin: List, Edit, and Delete Users
-// -------------------------------------------------------------
-// This screen shows a paginated list of all registered users.
-// Admins can:
-//   ✓ View users
-//   ✓ Navigate through pages of results
-//   ✓ Edit a user
-//   ✓ Delete a user
-//
-// Concepts covered in this lesson:
-// -------------------------------------------------------------
-// ▸ useReducer for multi-state management (fetch, delete, errors)
-// ▸ useEffect to fetch paginated admin data
-// ▸ Protecting admin endpoints with Authorization headers
-// ▸ Deleting a user with optimistic refresh
-// ▸ Using AdminPagination with a dedicated basePath
-// ▸ Reusing LoadingBox + MessageBox + Bootstrap responsive tables
-// -------------------------------------------------------------
-
 import { useContext, useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -28,12 +8,8 @@ import AdminPagination from '../../components/AdminPagination.jsx';
 import { Store } from '../../Store';
 import { getError } from '../../utils';
 
-// -------------------------------------------------------------
-// Reducer: handles all loading/error/fetch/delete state
-// -------------------------------------------------------------
 const reducer = (state, action) => {
   switch (action.type) {
-    // Fetching list
     case 'FETCH_REQUEST':
       return { ...state, loading: true, error: '' };
     case 'FETCH_SUCCESS':
@@ -49,7 +25,6 @@ const reducer = (state, action) => {
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
 
-    // Deleting a user
     case 'DELETE_REQUEST':
       return { ...state, loadingDelete: true, successDelete: false };
     case 'DELETE_SUCCESS':
@@ -66,49 +41,33 @@ const reducer = (state, action) => {
 
 export default function UserList() {
   const navigate = useNavigate();
-
-  // -------------------------------------------------------------
-  // Read ?page=X from the URL (default page = 1)
-  // -------------------------------------------------------------
   const { search } = useLocation();
-  const sp = new URLSearchParams(search);
-  const page = Number(sp.get('page') || 1);
+  const page = Number(new URLSearchParams(search).get('page') || 1);
 
-  // -------------------------------------------------------------
-  // Component state from the reducer
-  // -------------------------------------------------------------
   const [
     { loading, error, users, totalUsers, loadingDelete, successDelete, pages },
     dispatch,
   ] = useReducer(reducer, { loading: true, error: '', users: [] });
 
-  // Global auth
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // -------------------------------------------------------------
-  // Fetch paginated user list
-  // GET /api/users/admin?page=X
-  // -------------------------------------------------------------
+  // fetch paged users
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-
         const res = await fetch(`/api/users/admin?page=${page}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
-
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
 
-    // If a delete just completed, reset deletion state then re-fetch
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
     } else {
@@ -116,24 +75,17 @@ export default function UserList() {
     }
   }, [page, userInfo, successDelete]);
 
-  // -------------------------------------------------------------
-  // Delete a user (admin only)
-  // DELETE /api/users/:id
-  // -------------------------------------------------------------
+  // delete a user
   const deleteHandler = async (user) => {
     if (!window.confirm('Are you sure to delete?')) return;
-
     try {
       dispatch({ type: 'DELETE_REQUEST' });
-
       const res = await fetch(`/api/users/${user._id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${userInfo.token}` },
       });
-
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body?.message || `HTTP ${res.status}`);
-
       toast.success('User deleted successfully', { autoClose: 1000 });
       dispatch({ type: 'DELETE_SUCCESS' });
     } catch (err) {
@@ -142,41 +94,16 @@ export default function UserList() {
     }
   };
 
-  // -----------------------------------------------------------------------------
-  // NOTE ABOUT LoadingBox
-
-  // This page must wait for data before rendering the table.
-
-  // Why?
-  // - We are fetching a PAGINATED list of users from the backend
-  // - Table rows, edit links, and delete actions all depend on valid data
-  // - Pagination controls require the total page count from the server
-
-  // Rendering the table before the data arrives would result in
-  // empty rows, broken actions, or an unstable UI.
-
-  // LoadingBox ensures the admin only sees the table
-  // AFTER the user data has finished loading.
-  // -----------------------------------------------------------------------------
-
-  // -------------------------------------------------------------------------
-  // Render UI
-  // -------------------------------------------------------------------------
   return (
     <div className='content'>
       <Helmet>
         <title>Users</title>
       </Helmet>
       <br />
-
-      {/* Title displays total user count */}
       <h4 className='box'>Users ({totalUsers ?? 'Loading...'})</h4>
 
       <div className='box'>
-        {/* Deleting overlay */}
         {loadingDelete && <LoadingBox />}
-
-        {/* Conditional body */}
         {loading ? (
           <LoadingBox />
         ) : error ? (
@@ -193,18 +120,14 @@ export default function UserList() {
                   <th>ACTIONS</th>
                 </tr>
               </thead>
-
               <tbody>
-                {/* Render users */}
                 {users.map((user) => (
                   <tr key={user._id}>
                     <td>{user._id}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>{user.isAdmin ? 'YES' : 'NO'}</td>
-
                     <td className='text-nowrap'>
-                      {/* Edit */}
                       <button
                         type='button'
                         className='btn btn-primary btn-sm'
@@ -212,7 +135,6 @@ export default function UserList() {
                       >
                         Edit
                       </button>{' '}
-                      {/* Delete */}
                       <button
                         type='button'
                         className='btn btn-danger btn-sm'
@@ -223,8 +145,6 @@ export default function UserList() {
                     </td>
                   </tr>
                 ))}
-
-                {/* No results */}
                 {users.length === 0 && (
                   <tr>
                     <td colSpan={5} className='text-center'>
@@ -238,13 +158,15 @@ export default function UserList() {
         )}
       </div>
 
-      {/* Pagination — Lesson 8 uses basePath instead of keyword */}
       <AdminPagination
         currentPage={page}
         totalPages={pages}
         basePath='/admin/users'
+        showIfSinglePage // <-- forces it to render even with one page
       />
       <br />
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the UserList.jsx setup, check commit lesson-08.

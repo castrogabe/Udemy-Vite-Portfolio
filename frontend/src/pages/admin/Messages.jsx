@@ -291,7 +291,7 @@ export default function Messages() {
           currentPage={page}
           totalPages={pages}
           basePath='/admin/messages'
-          showIfSinglePage // <-- forces it to render even with one page
+          showIfSinglePage
         />
         <br />
       </div>
@@ -300,3 +300,4 @@ export default function Messages() {
 }
 
 // If you want to review the commented teaching version of the Messages.jsx setup, check commit lesson-06.
+// lesson-08 moved Messages.jsx into admin folder

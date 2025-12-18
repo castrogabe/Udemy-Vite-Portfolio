@@ -11,7 +11,7 @@ import seedRouter from './routes/seedRoutes.js'; // lesson 6
 import userRouter from './routes/userRoutes.js'; // lesson 5
 import messageRouter from './routes/messageRoutes.js'; // lesson 5
 import summaryRouter from './routes/summaryRoutes.js'; // lesson 6
-import websiteRouter from './routes/websiteRoutes.js'; // lesson 6
+import websiteRouter from './routes/websiteRoutes.js'; // lesson 6 <= updated lesson 9
 import uploadRouter from './routes/uploadRoutes.js'; // lesson 6
 
 dotenv.config();
@@ -37,7 +37,7 @@ app.use('/api/users', userRouter); // lesson 5
 app.use('/api/messages', messageRouter); // lesson 5
 app.use('/api/seed', seedRouter); // lesson 6
 app.use('/api/summary', summaryRouter); // lesson 6
-app.use('/api/website', websiteRouter); // lesson 6
+app.use('/api/websites', websiteRouter); // lesson 9 <= updated from website
 app.use('/api/upload', uploadRouter); // lesson 6
 
 // Simple list
@@ -94,3 +94,4 @@ app.listen(port, () => {
 // If you want to review the commented teaching version of the server.js setup, check commit lesson-05.
 // lesson-05 added userRouter, messageRouter
 // lesson-06 added seedRouter, summaryRouter, websiteRouter, uploadRouter
+// lesson-09 updated from website

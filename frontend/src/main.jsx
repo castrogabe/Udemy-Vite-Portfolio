@@ -13,10 +13,12 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'; // lesson 7
 
 // admin pages
 import AdminRoute from './components/AdminRoute.jsx'; // lesson 5
-import Dashboard from './pages/Dashboard.jsx'; // lesson 7
-import Messages from './pages/Messages.jsx'; // lesson 6
+import Dashboard from './pages/admin/Dashboard.jsx'; // lesson 7
+import Messages from './pages/admin/Messages.jsx'; // lesson 6
 import UserList from './pages/admin/UserList.jsx'; // lesson 8
 import UserEdit from './pages/admin/UserEdit.jsx'; // lesson 8
+import WebsiteList from './pages/admin/WebsiteList.jsx'; // lesson 9
+import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
 
 // pages
 import Home from './pages/Home.jsx'; // lesson 3
@@ -92,6 +94,22 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
+      {
+        path: 'admin/websites', // lesson 9
+        element: (
+          <AdminRoute>
+            <WebsiteList />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'admin/websites/:id', // lesson 9 | you already navigate to this path
+        element: (
+          <AdminRoute>
+            <WebsiteEdit />
+          </AdminRoute>
+        ),
+      },
     ],
   },
 ]);
@@ -112,3 +130,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 6 added Signin, Signup, Messages
 // lesson 7 added Dashboard, Profile, ResetPassword, ForgetPassword
 // lesson 8 added UserList, UserEdit
+// lesson 9 added WebsiteList, WebsiteEdit

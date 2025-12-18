@@ -290,3 +290,15 @@ UserEdit.jsx > added
 UserList.jsx > added
 
 main.jsx > updated, pages > added admin pages, updated forms
+
+# 9th Commit/lesson-Websites
+
+BACKEND server.js > updated app.use('/api/websites', websiteRouter); > website to websites
+
+FRONTEND
+folder: pages > admin
+UserList.jsx > updated
+WebsiteEdit.jsx > added
+WebsiteList.jsx > added
+
+main.jsx > updated with WebsiteList.jsx, WebsiteEdit.jsx
