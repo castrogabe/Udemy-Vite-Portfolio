@@ -349,3 +349,31 @@ styles > portfolio.css > updated for images
 
 utils.jsx > updated
 vite.config > updated
+
+# 11th Commit-Home Dynamic
+
+BACKEND
+folder: model
+homeContentModel.js > added
+
+folder: routes
+homeContentRoutes.js > added
+websiteRoutes.js > updated /search endpoint from server.js
+
+server.js > updated with homeContentRoutes.js
+
+FRONTEND
+folder: component
+Header.jsx > updated with Admin Edit Pages
+
+folder: pages
+Home.jsx > updated and made dynamic
+folder: pages/admin
+HomeContentEdit.jsx > added
+
+index.css > updated with @import './styles/homecontentedit.css';
+folder: styles
+homecontentedit.css > added
+Home.css > updated .gif
+
+main.jsx > updated with admin edit pages

@@ -6,7 +6,7 @@ import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import AdminPagination from '../../components/AdminPagination.jsx';
 import { Store } from '../../Store';
-import { getError, getImageUrl } from '../../utils'; // lesson-10 getImageUrl
+import { getError, getImageUrl } from '../../utils';
 
 const reducer = (state, action) => {
   switch (action.type) {

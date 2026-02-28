@@ -1,111 +1,104 @@
-import React from 'react';
+// -----------------------------------------------------------------------------
+// Home.jsx — Lesson 11
+// -----------------------------------------------------------------------------
+// The homepage now loads **dynamic content from MongoDB**, instead of
+// hard-coded text. Admins can update this content using HomeContentEdit.jsx.
+//
+// What is loaded dynamically:
+//   • jumbotronText → array of strings for the typewriter effect
+//   • sections → homepage content blocks (title, text, optional button)
+//
+// Data source:
+//   GET /api/homecontent   ← supplied by homeContentRoutes.js (Lesson 11)
+// -----------------------------------------------------------------------------
+
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Jumbotron from '../components/Jumbotron';
+import { toast } from 'react-toastify';
+
+// Lesson-11: support Vite dev mode + production using optional VITE_API_URL
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 export default function Home() {
+  // Lesson-11: homepage content now comes from the database
+  const [homeContent, setHomeContent] = useState({
+    jumbotronText: ['Loading...'],
+    sections: [],
+  });
+
+  // -----------------------------------------------------------------------------
+  // Load dynamic homepage content
+  // GET /api/homecontent
+  // -----------------------------------------------------------------------------
+  useEffect(() => {
+    const ac = new AbortController();
+
+    const fetchHomeContent = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/homecontent`, {
+          signal: ac.signal,
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+
+        // Populate homepage with dynamic data
+        setHomeContent(data);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Failed to fetch home content:', err);
+          toast.error('Failed to load content. Please try again later.');
+
+          // Lesson-11: graceful fallback so the homepage still renders something
+          setHomeContent({
+            jumbotronText: ['Error loading...'],
+            sections: [{ title: 'Error', content: 'Failed to load content.' }],
+          });
+        }
+      }
+    };
+
+    fetchHomeContent();
+
+    // Abort fetch if the component unmounts
+    return () => ac.abort();
+  }, []);
+
   return (
     <>
       <Helmet>
         <title>Portfolio Home</title>
       </Helmet>
-      <Jumbotron
-        text={[
-          'Web Developer',
-          'MERN Stack Engineer',
-          'React + Vite Enthusiast',
-        ]}
-      />
+
+      {/* Lesson-11: Jumbotron now receives dynamic Typewriter text */}
+      <Jumbotron text={homeContent.jumbotronText} />
+
       <br />
+
+      {/* Lesson-11: Render dynamic homepage sections */}
       <div className='content'>
-        <div className='box'>
-          <h4>The Website Development Process and Basic Languages Used</h4>
-          <p>
-            With half the world population online and using the internet, my
-            goal is to help bring the world to your <strong>Website</strong>{' '}
-            through interaction with your favorite <strong>Social Media</strong>{' '}
-            platforms and
-            <strong> SEO</strong> Search Engine Optimization to help market your
-            internet business.
-          </p>
-          <br />
+        {homeContent.sections.map((section, index) => (
+          <div className='box' key={index}>
+            <h4>{section.title}</h4>
+            <p>{section.content}</p>
 
-          <h4>Why Choose My Web Design and Hosting Services?</h4>
-          <p>
-            A striking and well-organized web page layout will greatly enhance
-            your appeal to your target audience. At first glance, you need to
-            capture your potential customer and communicate your products and
-            services in seconds. Here’s how I can help:
-            <ul>
-              <li>
-                Links to Social Media, favorite images, and video integration
-              </li>
-              <li>Responsive design using Bootstrap</li>
-              <li>
-                Hosting on AWS Amplify, or Render with code management on GitHub
-              </li>
-            </ul>
-            Hiring me means you’ll have a professional, user-friendly website
-            that’s optimized for both performance and aesthetics.
-          </p>
-          <br />
-
-          <h4>Need Help Building or Updating Your Website?</h4>
-          <p>
-            Whether you’re building a new site or updating an existing one, I’m
-            here to help.
-            <br />
-            <strong>Step 1:</strong> Identify what works well and what falls
-            short on your current site.
-            <br />
-            <strong>Step 2:</strong> Share your goals and vision for the new
-            site.
-            <br />
-            <strong>Step 3:</strong> Let’s collaborate to bring your vision to
-            life with professional web development and agile methodologies.
-          </p>
-          <p>
-            Building a site isn’t easy, but with my expertise, we can create a
-            site that meets all your needs and exceeds your expectations.
-          </p>
-          <br />
-
-          <h4>Ready to Get Started?</h4>
-          <p>
-            Let’s discuss your project and how we can work together to achieve
-            your goals.
-            <a href='/contact' className='my-button'>
-              Contact Me Today
-            </a>
-          </p>
-          <br />
-
-          <h4>What My Clients Say</h4>
-          <p>
-            "Working with [Your Name] has been a game-changer for our business.
-            The new website is not only beautiful but also incredibly
-            functional. We’ve seen a significant increase in traffic and
-            engagement." - <em>Happy Client</em>
-          </p>
-          <p>
-            "The professional approach and expertise [Your Name] brought to the
-            table made the entire development process smooth and efficient.
-            Highly recommend!" - <em>Satisfied Customer</em>
-          </p>
-          <br />
-
-          <h4>Explore My Portfolio</h4>
-          <p>
-            Take a look at some of the projects I’ve worked on to get a sense of
-            my skills and style.{' '}
-            <a href='/portfolio' className='my-button'>
-              View Portfolio
-            </a>
-          </p>
-        </div>
-        <br />
+            {/* Optional button (added in Lesson 11 schema) */}
+            {section.link && section.linkText && (
+              <a href={section.link} className='my-button'>
+                {section.linkText}
+              </a>
+            )}
+          </div>
+        ))}
       </div>
+
+      <br />
     </>
   );
 }
 
 // If you want to review the commented teaching version of the Contact.jsx setup, check commit lesson-03.
+// lesson-11: Dynamic homepage powered by homeContentModel + API

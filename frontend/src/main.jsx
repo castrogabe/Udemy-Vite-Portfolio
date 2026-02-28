@@ -19,12 +19,18 @@ import UserList from './pages/admin/UserList.jsx'; // lesson 8
 import UserEdit from './pages/admin/UserEdit.jsx'; // lesson 8
 import WebsiteList from './pages/admin/WebsiteList.jsx'; // lesson 9
 import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
+import HomeContentEdit from './pages/admin/HomeContentEdit.jsx'; // lesson 11
+
+// (optional placeholders if you already linked them in the menu)
+// import AboutUsEdit from './pages/admin/AboutUsEdit.jsx';
+// import DesignEdit from './pages/admin/DesignEdit.jsx';
+// import Portfolio from './pages/admin/PortfolioEdit.jsx';
 
 // pages
-import Home from './pages/Home.jsx'; // lesson 3
-import About from './pages/About.jsx'; // lesson 3
+import Home from './pages/Home.jsx'; // lesson 4
+import About from './pages/About.jsx'; // lesson 4
 import Design from './pages/Design.jsx'; // lesson 4
-import Portfolio from './pages/Portfolio.jsx'; // lesson 3
+import Portfolio from './pages/Portfolio.jsx'; // lesson 4
 import Contact from './pages/Contact.jsx'; // lesson 5
 import NotFound from './pages/NotFound.jsx';
 
@@ -41,10 +47,10 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFound />, // renders for unknown routes under this branch
     children: [
-      { index: true, element: <Home /> }, // lesson 3
-      { path: 'about', element: <About /> }, // lesson 3
+      { index: true, element: <Home /> }, // lesson 4 | updated lesson 11
+      { path: 'about', element: <About /> }, // lesson 4
       { path: 'design', element: <Design /> }, // lesson 4
-      { path: 'portfolio', element: <Portfolio /> }, // lesson 3
+      { path: 'portfolio', element: <Portfolio /> }, // lesson 4
       { path: 'contact', element: <Contact /> }, // lesson 5
       { path: 'signin', element: <Signin /> }, // lesson 6
       { path: 'signup', element: <Signup /> }, // lesson 6
@@ -110,6 +116,42 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
+
+      // admin edit pages
+      {
+        path: '/admin/homecontent', // lesson 11
+        element: (
+          <AdminRoute>
+            <HomeContentEdit />
+          </AdminRoute>
+        ),
+      },
+
+      // future edit pages
+      // {
+      //   path: 'admin/aboutusedit',
+      //   element: (
+      //     <AdminRoute>
+      //       <AboutUsEdit />
+      //     </AdminRoute>
+      //   ),
+      // },
+      // {
+      //   path: 'admin/designedit',
+      //   element: (
+      //     <AdminRoute>
+      //       <DesignEdit />
+      //     </AdminRoute>
+      //   ),
+      // },
+      // {
+      //   path: 'admin/portfolioedit',
+      //   element: (
+      //     <AdminRoute>
+      //       <PortfolioEdit />
+      //     </AdminRoute>
+      //   ),
+      // },
     ],
   },
 ]);
@@ -124,10 +166,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>
 );
 
-// If you want to review the commented teaching version of the main.jsx setup, check commit lesson-03.
-// lesson 3 added Home, About, Portfolio
-// lesson 4 added Contact, Design
+// If you want to review the commented teaching version of the main.jsx setup, check commit lesson-04.
+// lesson 4 added Home, About, Design, Portfolio, Contact
 // lesson 6 added Signin, Signup, Messages
 // lesson 7 added Dashboard, Profile, ResetPassword, ForgetPassword
 // lesson 8 added UserList, UserEdit
 // lesson 9 added WebsiteList, WebsiteEdit
+// lesson 11 updated HomeContentEdit

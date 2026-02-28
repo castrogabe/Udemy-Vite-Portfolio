@@ -6,7 +6,6 @@ import { Store } from '../Store';
 export default function Header() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,6 +27,7 @@ export default function Header() {
     <header>
       <nav className='navbar navbar-expand-lg header' data-bs-theme='dark'>
         <div className='container-fluid px-3'>
+          {/* Home Dynamic lesson 11 */}
           <NavLink to='/' className='navbar-brand'>
             <i className='fas fa-home' aria-hidden='true' /> My Portfolio
           </NavLink>
@@ -46,7 +46,7 @@ export default function Header() {
 
           <div className='collapse navbar-collapse' id='mainNavbar'>
             <ul className='navbar-nav ms-auto w-100 justify-content-end align-items-lg-center'>
-              {/* lesson 4 */}
+              {/* About Us dropdown */}
               <li className='nav-item dropdown'>
                 <button
                   className='nav-link dropdown-toggle'
@@ -72,7 +72,6 @@ export default function Header() {
                   </li>
                 </ul>
               </li>
-              {/* end lesson 4 */}
 
               <li className='nav-item'>
                 <NavLink to='/portfolio' className={navLink}>
@@ -81,13 +80,13 @@ export default function Header() {
                 </NavLink>
               </li>
 
-              {/* Web Design (use your preferred route) */}
               <li className='nav-item'>
                 <NavLink to='/webdesign' className={navLink}>
                   <i className='fas fa-layer-group' aria-hidden='true' /> Web
                   Design
                 </NavLink>
               </li>
+              {/* end lesson 4 */}
 
               {/* User Menu lesson 6 */}
               {userInfo ? (
@@ -99,39 +98,39 @@ export default function Header() {
                     aria-expanded='false'
                     type='button'
                   >
+                    <i className='fas fa-user-circle me-1'></i>
                     {userInfo.name}
                   </button>
                   <ul
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='userDropdown'
                   >
-                    {/* lesson 7 */}
                     <li>
+                      {/* lesson 7 */}
                       <Link className='dropdown-item' to='/profile'>
-                        Profile
+                        <i className='fas fa-user me-2'></i> Profile
                       </Link>
                     </li>
-
                     <li>
                       <hr className='dropdown-divider' />
                     </li>
                     <li>
-                      <button
-                        className='dropdown-item'
+                      <Link
+                        className='dropdown-item text-danger'
+                        to='#signout'
                         onClick={signoutHandler}
                       >
-                        Sign Out
-                      </button>
+                        <i className='fas fa-sign-out-alt me-2'></i> Sign Out
+                      </Link>
                     </li>
                   </ul>
                 </li>
               ) : (
                 // lesson 6
                 <li className='nav-item'>
-                  <NavLink to={signInHref} className={navLink}>
-                    <i className='fas fa-sign-in-alt' aria-hidden='true' /> Sign
-                    In
-                  </NavLink>
+                  <Link className='nav-link' to={signInHref}>
+                    <i className='fas fa-sign-in-alt me-2'></i> Sign In
+                  </Link>
                 </li>
               )}
 
@@ -142,11 +141,13 @@ export default function Header() {
                     className='nav-link dropdown-toggle'
                     id='adminDropdown'
                     data-bs-toggle='dropdown'
+                    data-bs-auto-close='outside' // keep submenu open while interacting
                     aria-expanded='false'
                     type='button'
                   >
                     Admin
                   </button>
+
                   <ul
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='adminDropdown'
@@ -158,12 +159,14 @@ export default function Header() {
                       </Link>
                     </li>
 
+                    {/* lesson 8 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/users'>
                         Users
                       </Link>
                     </li>
 
+                    {/* lesson 9 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/websites'>
                         Websites
@@ -175,6 +178,60 @@ export default function Header() {
                       <Link className='dropdown-item' to='/admin/messages'>
                         Messages
                       </Link>
+                    </li>
+
+                    {/* Edit Pages submenu (green) lesson-11*/}
+                    <li className='nav-item dropdown'>
+                      <button
+                        className='dropdown-item dropdown-toggle text-white bg-success fw-semibold'
+                        id='editPagesDropdown'
+                        data-bs-toggle='dropdown'
+                        aria-expanded='false'
+                        type='button'
+                      >
+                        Edit Pages
+                      </button>
+                      <ul
+                        className='dropdown-menu'
+                        aria-labelledby='editPagesDropdown'
+                      >
+                        {/* lesson 11 */}
+                        <li>
+                          <Link
+                            className='dropdown-item'
+                            to='/admin/homecontent'
+                          >
+                            Home Edit
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link
+                            className='dropdown-item'
+                            to='/admin/aboutusedit'
+                          >
+                            About Edit
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link
+                            className='dropdown-item'
+                            to='/admin/designedit'
+                          >
+                            Design Edit
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link
+                            className='dropdown-item'
+                            to='/admin/portfolioedit'
+                          >
+                            PortfolioEdit
+                          </Link>
+                        </li>
+                      </ul>
                     </li>
                   </ul>
                 </li>
@@ -197,3 +254,7 @@ export default function Header() {
 // • Using Contact/Messages
 
 // lesson-7 using Dashboard/Profile
+// lesson-8 users
+// lesson-9 websites
+// lesson-11 updated with admin Edit Pages submenu (green)
+// lesson-11 using the admin/edit HomeEdit page

@@ -35,7 +35,7 @@ const upload = multer({
 
 uploadRouter.post('/', isAuth, isAdmin, upload.single('image'), (req, res) => {
   const normalized = `/${req.file.path}`.replace(/\\/g, '/');
-  res.json({ path: normalized }); // <<< return JSON, not plain string | lesson 10
+  res.json({ path: normalized }); // <<< return JSON, not plain string
 });
 
 export default uploadRouter;
