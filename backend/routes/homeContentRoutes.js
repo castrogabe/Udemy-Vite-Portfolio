@@ -36,3 +36,5 @@ router.put(
 );
 
 export default router;
+
+// If you want to review the commented teaching version of the homeContentRoutes.js setup, check commit lesson-11.

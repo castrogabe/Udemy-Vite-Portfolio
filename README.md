@@ -374,6 +374,32 @@ HomeContentEdit.jsx > added
 index.css > updated with @import './styles/homecontentedit.css';
 folder: styles
 homecontentedit.css > added
-Home.css > updated .gif
+
+main.jsx > updated with admin edit pages
+
+# 12th Commit/lesson-About Dynamic
+
+BACKEND
+folder: model
+aboutContentModel.js > added
+
+folder: routes
+aboutContentRoutes.js > added
+uploadRoutes.js > updated
+
+server.js > updated with aboutContentRoutes.js
+
+FRONTEND
+folder: components
+SectionImages.jsx > added (images) for the AboutPage
+
+folder: pages
+About.jsx > updated (dynamic)
+folder: pages/admin
+AboutContentEdit.jsx > added
+
+index.css > updated with @import './styles/homecontentedit.css';
+folder: styles
+homecontentedit.css > added
 
 main.jsx > updated with admin edit pages

@@ -20,9 +20,9 @@ import UserEdit from './pages/admin/UserEdit.jsx'; // lesson 8
 import WebsiteList from './pages/admin/WebsiteList.jsx'; // lesson 9
 import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
 import HomeContentEdit from './pages/admin/HomeContentEdit.jsx'; // lesson 11
+import AboutUsEdit from './pages/admin/AboutUsEdit.jsx'; // lesson 12
 
 // (optional placeholders if you already linked them in the menu)
-// import AboutUsEdit from './pages/admin/AboutUsEdit.jsx';
 // import DesignEdit from './pages/admin/DesignEdit.jsx';
 // import Portfolio from './pages/admin/PortfolioEdit.jsx';
 
@@ -119,23 +119,23 @@ const router = createBrowserRouter([
 
       // admin edit pages
       {
-        path: '/admin/homecontent', // lesson 11
+        path: 'admin/homecontent', // lesson 11
         element: (
           <AdminRoute>
             <HomeContentEdit />
           </AdminRoute>
         ),
       },
+      {
+        path: 'admin/aboutusedit', // lesson 12
+        element: (
+          <AdminRoute>
+            <AboutUsEdit />
+          </AdminRoute>
+        ),
+      },
 
       // future edit pages
-      // {
-      //   path: 'admin/aboutusedit',
-      //   element: (
-      //     <AdminRoute>
-      //       <AboutUsEdit />
-      //     </AdminRoute>
-      //   ),
-      // },
       // {
       //   path: 'admin/designedit',
       //   element: (
@@ -172,4 +172,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 7 added Dashboard, Profile, ResetPassword, ForgetPassword
 // lesson 8 added UserList, UserEdit
 // lesson 9 added WebsiteList, WebsiteEdit
-// lesson 11 updated HomeContentEdit
+// lesson 11 added HomeContentEdit
+// lesson 12 added AboutUsContentEdit

@@ -46,7 +46,8 @@ export default function Header() {
 
           <div className='collapse navbar-collapse' id='mainNavbar'>
             <ul className='navbar-nav ms-auto w-100 justify-content-end align-items-lg-center'>
-              {/* About Us dropdown */}
+              {/* UPDATED: "About Us" is now a dropdown with multiple internal links */}
+              {/* lesson 4 */}
               <li className='nav-item dropdown'>
                 <button
                   className='nav-link dropdown-toggle'
@@ -64,8 +65,8 @@ export default function Header() {
                     </Link>
                   </li>
 
-                  {/* lesson 6 */}
                   <li>
+                    {/* lesson 6 */}
                     <Link className='dropdown-item' to='/contact'>
                       Contact Us
                     </Link>
@@ -80,6 +81,7 @@ export default function Header() {
                 </NavLink>
               </li>
 
+              {/* Dynamic Design lesson 13 */}
               <li className='nav-item'>
                 <NavLink to='/webdesign' className={navLink}>
                   <i className='fas fa-layer-group' aria-hidden='true' /> Web
@@ -180,7 +182,7 @@ export default function Header() {
                       </Link>
                     </li>
 
-                    {/* Edit Pages submenu (green) lesson-11*/}
+                    {/* Edit Pages submenu (green) */}
                     <li className='nav-item dropdown'>
                       <button
                         className='dropdown-item dropdown-toggle text-white bg-success fw-semibold'
@@ -205,6 +207,7 @@ export default function Header() {
                           </Link>
                         </li>
 
+                        {/* lesson 12 */}
                         <li>
                           <Link
                             className='dropdown-item'
@@ -258,3 +261,4 @@ export default function Header() {
 // lesson-9 websites
 // lesson-11 updated with admin Edit Pages submenu (green)
 // lesson-11 using the admin/edit HomeEdit page
+// lesson-12 using the admin/edit AboutUsEdit page
