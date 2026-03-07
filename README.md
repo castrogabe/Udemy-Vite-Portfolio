@@ -216,6 +216,10 @@ git status (tells us that everything is committed "working tree clean" on main b
 git push
 Now you can check repository for updated code.
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 6th Commit/lesson-Admin Signup, Signin, Messages, Upload seed data
 
 BACKEND
@@ -257,6 +261,10 @@ nvm use 20
 npm run dev
 http://localhost:5173/
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 7th Commit/lesson-Profile, ForgetPassword, ResetPassword
 
 FRONTEND
@@ -277,6 +285,10 @@ ResetPassword.jsx > added
 main.jsx > updated with new pages
 {}package.json > updated
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 8th Commit/lesson-Admin, Users
 
 FRONTEND
@@ -291,6 +303,10 @@ UserList.jsx > added
 
 main.jsx > updated, pages > added admin pages, updated forms
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 9th Commit/lesson-Websites
 
 BACKEND server.js > updated app.use('/api/websites', websiteRouter); > website to websites
@@ -302,6 +318,10 @@ WebsiteEdit.jsx > added
 WebsiteList.jsx > added
 
 main.jsx > updated with WebsiteList.jsx, WebsiteEdit.jsx
+
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
 
 # 10th Commit/lesson-Image upload
 
@@ -350,6 +370,10 @@ styles > portfolio.css > updated for images
 utils.jsx > updated
 vite.config > updated
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 11th Commit-Home Dynamic
 
 BACKEND
@@ -377,6 +401,10 @@ homecontentedit.css > added
 
 main.jsx > updated with admin edit pages
 
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
 # 12th Commit/lesson-About Dynamic
 
 BACKEND
@@ -403,3 +431,31 @@ folder: styles
 homecontentedit.css > added
 
 main.jsx > updated with admin edit pages
+
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev
+
+# 13th Commit/lesson-Design Dynamic
+
+BACKEND
+folder: models
+designContentModel.js > added
+
+folder: routes
+designContentRoutes.js > added
+
+server.js > updated with designContentRoutes
+
+FRONTEND
+folder: pages
+Design.jsx > updated (dynamic)
+
+folder: admin/pages
+designContentEdit.jsx > added
+
+main.jsx > uncomment admin/DesignEdit
+
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev

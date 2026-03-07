@@ -16,6 +16,7 @@ import uploadRouter from './routes/uploadRoutes.js'; // lesson 6
 import homeContentRouter from './routes/homeContentRoutes.js'; // lesson 11
 import fs from 'node:fs'; // lesson 10
 import aboutContentRouter from './routes/aboutContentRoutes.js'; // lesson 12
+import designContentRouter from './routes/designContentRoutes.js'; // lesson 13
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/api/websites', websiteRouter); // lesson 9 <= updated from website
 app.use('/api/upload', uploadRouter); // lesson 6 / lesson 12: upload single and delete image
 app.use('/api/homecontent', homeContentRouter); // lesson 11: added new route group for editing home page sections
 app.use('/api/aboutcontent', aboutContentRouter); // lesson 12: added new route group for editing about page sections
+app.use('/api/designcontent', designContentRouter); // lesson 13: added new route group for editing design page sections
 
 /**
  * Static files:
@@ -74,4 +76,5 @@ app.listen(port, () => {
 // lesson-09 updated from website
 // lesson-10 /uploads
 // lesson-11 added homeContentRoutes and moved website search/pagination endpoints from server.js into websiteRoutes.js
-// lesson-12 added aboutUsContentRoutes add single image and delete, uploadRoutes updated upload single and delete image
+// lesson-12 added aboutContentRoutes add single image and delete
+// lesson-13 added designContentRoutes

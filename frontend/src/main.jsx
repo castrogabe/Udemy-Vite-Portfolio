@@ -21,9 +21,9 @@ import WebsiteList from './pages/admin/WebsiteList.jsx'; // lesson 9
 import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
 import HomeContentEdit from './pages/admin/HomeContentEdit.jsx'; // lesson 11
 import AboutUsEdit from './pages/admin/AboutUsEdit.jsx'; // lesson 12
+import DesignEdit from './pages/admin/DesignContentEdit.jsx'; // lesson 13
 
 // (optional placeholders if you already linked them in the menu)
-// import DesignEdit from './pages/admin/DesignEdit.jsx';
 // import Portfolio from './pages/admin/PortfolioEdit.jsx';
 
 // pages
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> }, // lesson 4 | updated lesson 11
       { path: 'about', element: <About /> }, // lesson 4
-      { path: 'design', element: <Design /> }, // lesson 4
+      { path: 'webdesign', element: <Design /> }, // lesson 4
       { path: 'portfolio', element: <Portfolio /> }, // lesson 4
       { path: 'contact', element: <Contact /> }, // lesson 5
       { path: 'signin', element: <Signin /> }, // lesson 6
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
 
       // admin edit pages
       {
-        path: 'admin/homecontent', // lesson 11
+        path: '/admin/homecontent', // lesson 11
         element: (
           <AdminRoute>
             <HomeContentEdit />
@@ -134,16 +134,16 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
+      {
+        path: 'admin/designedit', // lesson 13
+        element: (
+          <AdminRoute>
+            <DesignEdit />
+          </AdminRoute>
+        ),
+      },
 
       // future edit pages
-      // {
-      //   path: 'admin/designedit',
-      //   element: (
-      //     <AdminRoute>
-      //       <DesignEdit />
-      //     </AdminRoute>
-      //   ),
-      // },
       // {
       //   path: 'admin/portfolioedit',
       //   element: (
@@ -173,4 +173,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 8 added UserList, UserEdit
 // lesson 9 added WebsiteList, WebsiteEdit
 // lesson 11 added HomeContentEdit
-// lesson 12 added AboutUsContentEdit
+// lesson 12 added AboutUsEdit
+// lesson 13 added DesignEdit

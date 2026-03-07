@@ -1,4 +1,3 @@
-// routes/aboutContentRoutes.js
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import multer from 'multer';
@@ -10,26 +9,11 @@ import { isAuth, isAdmin } from '../utils.js';
 
 const aboutContentRouter = express.Router();
 
-// -----------------------------------------------------------------------------
-// LESSON 12 — BACKEND SETUP FOR DYNAMIC ABOUT PAGE
-// This route file powers a fully editable About page by supporting:
-//   • A single AboutContent document stored in MongoDB
-//   • Section-level images (multiple images per section)
-//   • Optional jumbotron image (top hero image)
-//   • Safe file upload + file deletion on disk
-//
-// Why this matters:
-// - Mongo stores the page structure and text
-// - The server stores image files on disk (/uploads or /var/data/uploads on Render)
-// - The frontend receives { url, name } so it can display images and delete them later
-// -----------------------------------------------------------------------------
-
 // Resolve __dirname (ESM compatible)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Choose upload directory depending on environment
-// (Render uses /var/data/uploads for Persistent Disk)
+// Ensure upload directory exists
 const isProduction = process.env.NODE_ENV === 'production';
 const uploadDir = isProduction
   ? '/var/data/uploads'
@@ -41,15 +25,12 @@ if (!fs.existsSync(uploadDir)) {
   fs.chmodSync(uploadDir, 0o777); // allow server to write images
 }
 
-// -------------------------
-// Multer storage engine
-// -------------------------
+// Multer setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Unique file naming prevents collisions
     const uniqueName = `${Date.now()}-${file.originalname}`;
     cb(null, uniqueName);
   },
@@ -57,31 +38,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// -----------------------------------------------------------------------------
-// GET /api/aboutcontent
-// Returns the About page content document.
-// If it doesn't exist yet, returns a safe default shape.
-// -----------------------------------------------------------------------------
+// GET /api/aboutcontent - Fetch about content
 aboutContentRouter.get(
   '/',
   asyncHandler(async (req, res) => {
     const content = await AboutContent.findOne({});
-
-    // If nothing exists yet, return a safe default shape
-    // This prevents frontend crashes (sections.map on undefined, etc.)
     if (!content) {
       return res.json({ sections: [], jumbotronImage: null });
     }
-
     res.json(content);
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/aboutcontent/image
-// Uploads an image for a *specific section*.
-// This is used in the AboutContentEdit screen.
-// -----------------------------------------------------------------------------
+// --- New Routes for Section Images ---
+// PUT /api/aboutcontent/image - Upload an image for a section
 aboutContentRouter.put(
   '/image',
   isAuth,
@@ -92,9 +62,6 @@ aboutContentRouter.put(
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // Image is stored in /uploads, frontend receives { url, name }
-    // IMPORTANT: /uploads must be served statically in server.js:
-    // app.use('/uploads', express.static(uploadDir))
     const imageUrl = `/uploads/${req.file.filename}`;
 
     res.json({
@@ -103,11 +70,7 @@ aboutContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// DELETE /api/aboutcontent/image
-// Removes a specific section image from disk.
-// Optional improvement: also remove references in MongoDB sections.
-// -----------------------------------------------------------------------------
+// DELETE /api/aboutcontent/jumbotron - Remove jumbotron image
 aboutContentRouter.delete(
   '/image',
   isAuth,
@@ -119,18 +82,13 @@ aboutContentRouter.delete(
       return res.status(400).json({ message: 'Image name is required' });
     }
 
-    // 1) Delete the physical file from disk
     const imagePath = path.join(uploadDir, imageName);
 
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
     } else {
-      // If the file doesn't exist, we still might want to clean Mongo references
-      // but we'll keep the response consistent.
-      // (You can choose to return 404 here if you prefer strict behavior.)
     }
 
-    // 2) Optional: Clean up image references in MongoDB (prevents "ghost images")
     const content = await AboutContent.findOne({});
     if (content?.sections?.length) {
       content.sections = content.sections.map((section) => ({
@@ -146,11 +104,7 @@ aboutContentRouter.delete(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/aboutcontent/jumbotron
-// Uploads or replaces the *top hero image* of the About page.
-// Supports auto-deleting the old jumbotron image.
-// -----------------------------------------------------------------------------
+// PUT /api/aboutcontent - Replace sections
 aboutContentRouter.put(
   '/jumbotron',
   isAuth,
@@ -187,10 +141,6 @@ aboutContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// DELETE /api/aboutcontent/jumbotron
-// Removes the hero image from both MongoDB and the filesystem.
-// -----------------------------------------------------------------------------
 aboutContentRouter.delete(
   '/jumbotron',
   isAuth,
@@ -216,10 +166,7 @@ aboutContentRouter.delete(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/aboutcontent
-// Replaces the entire list of About sections.
-// -----------------------------------------------------------------------------
+// PUT /api/aboutcontent/section/:sectionIndex - Update specific section
 aboutContentRouter.put(
   '/',
   isAuth,
@@ -237,10 +184,7 @@ aboutContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/aboutcontent/section/:sectionIndex
-// Allows updating *only one* section instead of replacing all sections.
-// -----------------------------------------------------------------------------
+// PUT /api/aboutcontent/section/:sectionIndex - Update specific section
 aboutContentRouter.put(
   '/section/:sectionIndex',
   isAuth,
@@ -258,7 +202,6 @@ aboutContentRouter.put(
       index >= 0 &&
       index < content.sections.length
     ) {
-      // Ensure images array always exists
       if (!updatedSection.images) {
         updatedSection.images = [];
       }
@@ -274,3 +217,5 @@ aboutContentRouter.put(
 );
 
 export default aboutContentRouter;
+
+// If you want to review the commented teaching version of the aboutContentRoutes.js setup, check commit lesson-12.
