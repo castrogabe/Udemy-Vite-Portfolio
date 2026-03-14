@@ -1,0 +1,27 @@
+/* Hero / Jumbotron */
+.jumbotron.jumbotron-fluid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjdmcWYxcGw4b2Q3ejNoYmV1N29kdnF1bGtubzBzZWlpc3FrZnh4cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xTiTnxpQ3ghPiB2Hp6/giphy.gif');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 3em 3em;
+  color: var(--accent);
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px blue;
+}
+
+/* Typewriter headline */
+.typewriter-container {
+  text-align: center;
+  color: var(--accent);
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px blue;
+}

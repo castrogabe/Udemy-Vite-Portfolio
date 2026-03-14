@@ -1,0 +1,55 @@
+/* Footer main block (if you add class="footer" on your container) */
+.footer {
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  background-color: var(--primary);
+  color: var(--secondary);
+  text-align: center;
+}
+
+/* Bottom footer bar */
+.bottom-footer {
+  text-decoration: none;
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 1rem;
+  background-color: var(--bottom-footer-bg);
+  color: var(--secondary);
+  text-align: center;
+}
+
+/* Footer links inherit color and drop underline */
+.footer a,
+.footer a:link,
+.footer a:visited {
+  text-decoration: none;
+  color: inherit;
+}
+.footer a:hover,
+.footer a:focus {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+/* Social icons */
+a.socialIcon {
+  margin: 0 1rem;
+}
+.socialIcon {
+  margin: 0 1rem;
+  transition: transform 250ms;
+}
+.socialIcon a:hover {
+  color: var(--accent);
+}
+a.facebookIcon {
+  color: var(--secondary);
+}
+a.youtubeIcon {
+  color: var(--secondary);
+}
+a.email {
+  color: var(--secondary);
+}
