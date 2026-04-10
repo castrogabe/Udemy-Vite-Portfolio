@@ -1,0 +1,33 @@
+/* CSS Variables */
+:root {
+  --primary: #001f3f; /* navy blue header color */
+  --secondary: #9a9da0;
+  --accent: #f4f4f4; /* very light gray */
+  --bottom-footer-bg: #000000; /* black */
+}
+
+/* Layout */
+main {
+  flex: 1;
+  min-height: 70vh;
+  background-color: var(--accent);
+}
+
+.content {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+} /* pushes footer to bottom */

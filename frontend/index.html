@@ -1,13 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Favicon & App Icons (put files in /public/images/...) -->
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ✅ Base SEO -->
+    <title>Gabriel Castro | Web Developer & Portfolio</title>
+    <meta
+      name="description"
+      content="Portfolio of Gabriel Castro — React/MERN web developer. Projects, case studies, and contact."
+    />
+    <meta
+      name="keywords"
+      content="Gabriel Castro, web developer, React, MERN, portfolio, JavaScript, frontend"
+    />
+    <meta name="author" content="Gabriel Castro" />
+    <meta name="robots" content="index,follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://YOUR_DOMAIN/" />
+
+    <!-- 🌐 Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gabriel Castro Portfolio" />
+    <meta property="og:url" content="https://YOUR_DOMAIN/" />
+    <meta
+      property="og:title"
+      content="Gabriel Castro | Web Developer & Portfolio"
+    />
+    <meta
+      property="og:description"
+      content="React/MERN developer building clean, fast web apps. Explore projects and get in touch."
+    />
+    <meta
+      property="og:image"
+      content="https://YOUR_DOMAIN/images/og-preview.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- 🐦 Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Gabriel Castro | Web Developer & Portfolio"
+    />
+    <meta
+      name="twitter:description"
+      content="Portfolio of Gabriel Castro — React/MERN web developer."
+    />
+    <meta
+      name="twitter:image"
+      content="https://YOUR_DOMAIN/images/og-preview.jpg"
+    />
+
+    <!-- 🔗 Social profiles (optional) -->
+    <meta
+      property="og:see_also"
+      content="https://www.facebook.com/YOUR_HANDLE"
+    />
+    <meta
+      property="og:see_also"
+      content="https://www.instagram.com/YOUR_HANDLE"
+    />
+    <meta
+      property="og:see_also"
+      content="https://www.linkedin.com/in/YOUR_HANDLE"
+    />
+
+    <!-- 🧠 JSON-LD Structured Data (Portfolio) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Gabriel Castro",
+        "url": "https://YOUR_DOMAIN/",
+        "jobTitle": "Web Developer",
+        "sameAs": [
+          "https://www.linkedin.com/in/YOUR_HANDLE",
+          "https://github.com/YOUR_HANDLE",
+          "https://www.instagram.com/YOUR_HANDLE"
+        ]
+      }
+    </script>
+
+    <!-- 🎨 Icons (Font Awesome via CDN) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <div id="root"></div>
+    <!-- Vite entry -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
