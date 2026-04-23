@@ -161,3 +161,31 @@ git commit -m "Commit-Bootstrap, components, styles folder for .css, index.html 
 git status (tells us that everything is committed "working tree clean" on main branch)
 git push
 Now you can check repository for updated code.
+
+# 4th Commit/lesson-Design, Contact pages
+
+FRONTEND
+folder: pages
+Contact.jsx > added
+Design.jsx > updated
+
+utils.jsx > added
+
+main.jsx > updated
+
+nvm use 20
+npm run dev
+http://localhost:5173/
+
+steps for fourth commit, ect: Open new terminal or command prompt in VSCode for the project root
+
+git add . (space between add .)
+git status (shows staged files ready to commit in green)
+git commit -m "4th Commit/lesson-Design, Contact pages" (I copy and paste this)
+git status (tells us that everything is committed "working tree clean" on main branch)
+git push
+Now you can check repository for updated code.
+
+nvm use 20
+npm run dev
+http://localhost:5173/

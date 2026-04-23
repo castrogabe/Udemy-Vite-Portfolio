@@ -3,15 +3,22 @@ import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App.jsx';
-import Home from './pages/Home.jsx';
-import About from './pages/About.jsx';
-import Design from './pages/Design.jsx';
-import Portfolio from './pages/Portfolio.jsx'; // <- rename file if needed
-import NotFound from './pages/NotFound.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
 import { StoreProvider } from './Store.jsx';
+
+// admin pages
+
+// pages
+import Home from './pages/Home.jsx'; // lesson 3
+import About from './pages/About.jsx'; // lesson 3
+import Design from './pages/Design.jsx'; // lesson 4 updated
+import Portfolio from './pages/Portfolio.jsx'; // Lesson 3 <- rename file if needed
+import Contact from './pages/Contact.jsx'; // lesson 4
+import NotFound from './pages/NotFound.jsx';
+
+// user protected pages
 
 const router = createBrowserRouter([
   {
@@ -23,6 +30,7 @@ const router = createBrowserRouter([
       { path: 'about', element: <About /> }, // lesson 3
       { path: 'design', element: <Design /> }, // lesson 3
       { path: 'portfolio', element: <Portfolio /> }, // lesson 3
+      { path: 'contact', element: <Contact /> }, // lesson 4
     ],
   },
 ]);
@@ -39,3 +47,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 // If you want to review the commented teaching version of the main setup, check commit lesson-04.
 // lesson 3 added Home, About, Design, Portfolio
+// lesson 4 added Contact
