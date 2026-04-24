@@ -189,3 +189,54 @@ Now you can check repository for updated code.
 nvm use 20
 npm run dev
 http://localhost:5173/
+
+# 5th Commit/lesson-Backend (ESM), Admin, Messages, MongoDB setup .gitignore in root
+
+root: folder: .vscode
+{}settings.json
+
+BACKEND
+NEW TERMINAL: mkdir backend > cd backend > npm init -y
+npm install bcryptjs cors dotenv express express-async-handler jsonwebtoken mongoose multer nodemailer
+npm install --save-dev nodemon
+(backend we are using ex: server.js not server.jsx, .jsx is for the frontend)
+
+folder: models
+messageModel.js > added
+userModel.js > added
+
+folder: routes
+messageRoutes.js > added
+userRoutes.js > added
+
+.env > added for connection > use .gitignore to prevent from pushing to github
+.env.example > added
+
+server.js > added
+{}package.json > added
+
+https://cloud.mongodb.com/
+0.0.0.0/0 IP Access List
+connect > drivers
+mongodb+srv://xxxxxxx:<db_password>@profile.xxxxxxxxxx.mongodb.net/?appName=Profile
+database access > password > password auth = qDT0vqVSu20X1szr (create your own password)
+
+FRONTEND
+comments removed and referenced by lesson at bottom of page
+EX: // If you want to review the commented teaching version of the Contact.jsx setup, check commit lesson-04.
+
+nvm use 20
+npm run dev
+http://localhost:5173/
+
+control + c = stops server
+
+** last example for steps to make a github commit **
+steps for fifth commit, ect: Open new terminal or command prompt in VSCode for the project root
+
+git add . (space between add .)
+git status (shows staged files ready to commit in green)
+git commit -m "5th Commit/lesson-Backend (ESM), Admin, Messages, MongoDB setup"
+git status (tells us that everything is committed "working tree clean" on main branch)
+git push
+Now you can check repository for updated code.

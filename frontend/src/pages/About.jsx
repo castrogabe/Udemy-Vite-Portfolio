@@ -59,7 +59,7 @@ export default function About() {
 
           <div className='col-12 col-md-6'>
             <img
-              src='/images/certificate.png' // place file at public/images/cert.png
+              src='/images/cert.png' // place file at public/images/cert.png
               alt='Certification for [Your Name]'
               className='img-fluid rounded shadow-sm'
               loading='lazy'
