@@ -1,33 +1,24 @@
-// backend/routes/messageRoutes.js
-// -------------------------------------------------------------
-// This file defines all API routes related to user messages.
-// These include contact form submissions, admin viewing, deletion,
-// and sending reply emails via Nodemailer.
-// -------------------------------------------------------------
-
+// routes/messageRoutes.js
 import express from 'express';
-import expressAsyncHandler from 'express-async-handler'; // Simplifies error handling in async routes
-import Message from '../models/messageModel.js'; // Import the Mongoose Message model
-import { isAuth, isAdmin, transporter } from '../utils.js'; // Auth middlewares + email transporter
+import expressAsyncHandler from 'express-async-handler';
+import Message from '../models/messageModel.js';
+import { isAuth, isAdmin, transporter } from '../utils.js';
 
-const messageRouter = express.Router(); // Create a new Express router instance
-const PAGE_SIZE = 12; // Default number of messages per page (for admin pagination)
+const messageRouter = express.Router();
+const PAGE_SIZE = 12;
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/messages/admin
-// DESCRIPTION: Returns a paginated list of messages for admin dashboard
-// MIDDLEWARES: isAuth (requires login), isAdmin (admin-only access)
-// -------------------------------------------------------------
+/**
+ * GET /api/messages/admin
+ * Paginated admin list
+ */
 messageRouter.get(
   '/admin',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    // Parse pagination query parameters (with default values)
     const page = parseInt(req.query.page || '1', 10);
     const pageSize = parseInt(req.query.pageSize || String(PAGE_SIZE), 10);
 
-    // Fetch paginated messages and total count simultaneously for efficiency
     const [messages, countMessages] = await Promise.all([
       Message.find()
         .skip(pageSize * (page - 1))
@@ -35,7 +26,6 @@ messageRouter.get(
       Message.countDocuments(),
     ]);
 
-    // Respond with message data and pagination info
     res.json({
       messages,
       totalMessages: countMessages,
@@ -45,39 +35,33 @@ messageRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/messages/contact
-// DESCRIPTION: Saves a new contact form submission to the database
-// ACCESS: Public (no authentication required)
-// -------------------------------------------------------------
+/**
+ * POST /api/messages/contact
+ * Save a contact form submission
+ */
 messageRouter.post(
   '/contact',
   expressAsyncHandler(async (req, res) => {
     const { update_time, fullName, email, subject, message } = req.body;
 
-    // Create a new Message document from form data
     const newMessage = new Message({
       update_time,
       fullName,
       email,
       subject,
       message,
-      // Note: additional fields like 'reply' could be added later
+      // If you want to persist reply fields, add them to the schema first.
     });
 
-    // Save to MongoDB
     const saved = await newMessage.save();
-
-    // Respond with created document
     res.status(201).json(saved);
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: GET /api/messages
-// DESCRIPTION: Fetch all messages (use with caution, mainly for admin tools)
-// ACCESS: Public or Protected (depending on use case)
-// -------------------------------------------------------------
+/**
+ * GET /api/messages
+ * List all messages (non-admin use carefully)
+ */
 messageRouter.get(
   '/',
   expressAsyncHandler(async (_req, res) => {
@@ -86,11 +70,10 @@ messageRouter.get(
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: DELETE /api/messages/:id
-// DESCRIPTION: Delete a specific message by ID (admin only)
-// MIDDLEWARES: isAuth, isAdmin
-// -------------------------------------------------------------
+/**
+ * DELETE /api/messages/:id
+ * Admin delete
+ */
 messageRouter.delete(
   '/:id',
   isAuth,
@@ -98,32 +81,26 @@ messageRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
     const msg = await Message.findById(id);
+    if (!msg) return res.status(404).json({ message: 'Message Not Found' });
 
-    if (!msg) {
-      return res.status(404).json({ message: 'Message Not Found' });
-    }
-
-    // Delete the message document from the collection
     await Message.deleteOne({ _id: id });
     res.json({ message: 'Message deleted successfully' });
   })
 );
 
-// -------------------------------------------------------------
-// ROUTE: POST /api/messages/reply
-// DESCRIPTION: Sends a reply email back to the user using Nodemailer
-// ACCESS: Public (you could make this admin-only if desired)
-// -------------------------------------------------------------
+/**
+ * POST /api/messages/reply
+ * Send a reply email
+ */
 messageRouter.post(
   '/reply',
   expressAsyncHandler(async (req, res) => {
     const { email, subject, replyContent } = req.body;
 
-    // Define the email template and content
     const emailContent = {
-      from: process.env.EMAIL_FROM, // Sender address (from .env)
-      to: email, // Recipient (user who sent the original message)
-      subject: `Re: ${subject}`, // Prefix with "Re:" to indicate reply
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: `Re: ${subject}`,
       html: `
         <h1>Reply to Your Message</h1>
         <p><strong>Subject:</strong> ${subject}</p>
@@ -133,15 +110,12 @@ messageRouter.post(
       `,
     };
 
-    // Send the email using the Nodemailer transporter (configured in utils.js)
     const info = await transporter.sendMail(emailContent);
-
-    // You can log info.response or info.messageId for debugging
+    // info.response available depending on transporter
     res.json({ message: 'Reply sent successfully' });
   })
 );
 
-// -------------------------------------------------------------
-// Export router so it can be used in server.js (app.use('/api/messages', messageRouter))
-// -------------------------------------------------------------
 export default messageRouter;
+
+// If you want to review the commented teaching version of the messageRoutes.js setup, check commit lesson-05.
