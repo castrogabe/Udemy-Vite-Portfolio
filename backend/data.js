@@ -77,3 +77,5 @@ const data = {
 };
 
 export default data;
+
+// If you want to review the commented teaching version of the data.js setup, check commit lesson-05.

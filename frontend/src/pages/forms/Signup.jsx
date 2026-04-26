@@ -1,20 +1,3 @@
-// -------------------------------------------------------------
-// Signup.jsx — User Registration Form
-// -------------------------------------------------------------
-// This screen allows new users to create an account.
-// It connects to the backend /api/users/signup route
-// and demonstrates password confirmation, validation feedback,
-// and automatic login upon successful registration.
-//
-// Concepts covered:
-// Controlled inputs with useState
-// useMemo for derived state (password match check)
-// Context dispatch for auto-signin after signup
-// Reusable redirect pattern via ?redirect= query param
-// Password visibility toggles (eye icon buttons)
-// Form validation and inline feedback styling
-// -------------------------------------------------------------
-
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -24,17 +7,10 @@ import { getError } from '../../utils';
 
 export default function Signup() {
   const navigate = useNavigate();
-
-  // -----------------------------------------------------------
-  // Capture redirect query param (e.g. /signup?redirect=/checkout)
-  // -----------------------------------------------------------
   const { search } = useLocation();
   const redirectInUrl = new URLSearchParams(search).get('redirect');
   const redirect = redirectInUrl ? redirectInUrl : '/';
 
-  // -----------------------------------------------------------
-  // Local component state
-  // -----------------------------------------------------------
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,43 +19,26 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // -----------------------------------------------------------
-  // Global state: get userInfo from Store
-  // -----------------------------------------------------------
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
-  // -----------------------------------------------------------
-  // If user is already signed in, redirect them immediately
-  // -----------------------------------------------------------
   useEffect(() => {
     if (userInfo) navigate(redirect);
   }, [navigate, redirect, userInfo]);
 
-  // -----------------------------------------------------------
-  // Derived value: passwordsMatch
-  // useMemo prevents unnecessary recalculations
-  // -----------------------------------------------------------
   const passwordsMatch = useMemo(
     () => password.length > 0 && password === confirmPassword,
     [password, confirmPassword]
   );
 
-  // -----------------------------------------------------------
-  // Handle form submission
-  // -----------------------------------------------------------
   const submitHandler = async (e) => {
     e.preventDefault();
-
     if (!passwordsMatch) {
       toast.error('Passwords do not match');
       return;
     }
-
     try {
       setLoading(true);
-
-      // Send POST request to backend
       const res = await fetch('/api/users/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,20 +48,13 @@ export default function Signup() {
           password,
         }),
       });
-
-      // Handle HTTP errors gracefully
       if (!res.ok) {
         const errBody = await res.json().catch(() => ({}));
         throw new Error(errBody?.message || `HTTP ${res.status}`);
       }
-
       const data = await res.json();
-
-      // Auto sign-in after registration
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
-
-      // Redirect user to intended page or home
       navigate(redirect || '/');
     } catch (err) {
       toast.error(getError(err));
@@ -111,27 +63,20 @@ export default function Signup() {
     }
   };
 
-  // -----------------------------------------------------------
-  // Render UI
-  // -----------------------------------------------------------
   return (
     <div className='content'>
       <Helmet>
         <title>Sign Up</title>
       </Helmet>
-
       <br />
       <h4 className='box'>Sign Up</h4>
 
-      {/* Two-column responsive layout */}
+      {/* Two-column layout */}
       <div className='row'>
-        {/* -----------------------------------------------------
-            Left Column: Registration Form
-        ----------------------------------------------------- */}
+        {/* Left: form */}
         <div className='col-12 col-md-6'>
           <div className='box' style={{ maxWidth: 640, marginBottom: '1rem' }}>
             <form onSubmit={submitHandler} noValidate>
-              {/* Name Field */}
               <div className='mb-3'>
                 <label htmlFor='name' className='form-label'>
                   Name
@@ -146,7 +91,6 @@ export default function Signup() {
                 />
               </div>
 
-              {/* Email Field */}
               <div className='mb-3'>
                 <label htmlFor='email' className='form-label'>
                   Email
@@ -162,7 +106,6 @@ export default function Signup() {
                 />
               </div>
 
-              {/* Password Field */}
               <div className='mb-3'>
                 <label htmlFor='password' className='form-label'>
                   Password
@@ -195,7 +138,6 @@ export default function Signup() {
                 </div>
               </div>
 
-              {/* Confirm Password Field */}
               <div className='mb-3'>
                 <label htmlFor='confirmPassword' className='form-label'>
                   Confirm Password
@@ -234,8 +176,6 @@ export default function Signup() {
                     />
                   </button>
                 </div>
-
-                {/* Inline validation message */}
                 {confirmPassword.length > 0 && !passwordsMatch && (
                   <div
                     className='invalid-feedback'
@@ -246,7 +186,6 @@ export default function Signup() {
                 )}
               </div>
 
-              {/* Submit Button */}
               <div className='mb-3'>
                 <button
                   className='btn btn-primary'
@@ -257,7 +196,6 @@ export default function Signup() {
                 </button>
               </div>
 
-              {/* Navigation Links */}
               <div className='mb-3'>
                 Already have an account?{' '}
                 <Link to={`/signin?redirect=${encodeURIComponent(redirect)}`}>
@@ -268,9 +206,7 @@ export default function Signup() {
           </div>
         </div>
 
-        {/* -----------------------------------------------------
-            Right Column: Illustration Image
-        ----------------------------------------------------- */}
+        {/* Right: image */}
         <div className='col-12 col-md-6 d-flex align-items-center justify-content-center'>
           <img
             src='/images/register.png'
@@ -283,3 +219,5 @@ export default function Signup() {
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the Signup.jsx setup, check commit lesson-06.

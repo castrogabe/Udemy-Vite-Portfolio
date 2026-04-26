@@ -107,6 +107,7 @@ export default function Header() {
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='userDropdown'
                   >
+                    {/* lesson 7 */}
                     <li>
                       <Link className='dropdown-item' to='/profile'>
                         Profile
@@ -152,6 +153,7 @@ export default function Header() {
                     className='dropdown-menu dropdown-menu-end'
                     aria-labelledby='adminDropdown'
                   >
+                    {/* lesson 7 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/dashboard'>
                         Website Dashboard
@@ -195,3 +197,5 @@ export default function Header() {
 // • Converted “About Us” link into a dropdown
 // • Changed /design → /webdesign
 // • Using Contact/Messages
+
+// lesson-7 using Dashboard/Profile

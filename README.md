@@ -281,3 +281,22 @@ npm install --force
 nvm use 20
 npm run dev
 http://localhost:5173/
+
+# 7th Commit/lesson-Profile, ForgetPassword, ResetPassword
+
+FRONTEND
+npm i react-react-google-charts (already installed)
+
+folder: components
+ProtectedRoute.jsx > added
+Header.jsx > comments added by lesson number
+
+folder: pages
+Dashboard.jsx > added
+
+subfolder: forms
+ForgetPassword.jsx > added
+Profile.jsx > added
+ResetPassword.jsx > added
+
+main.jsx > updated with new pages
