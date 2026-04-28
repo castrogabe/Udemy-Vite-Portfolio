@@ -10,8 +10,10 @@ import { StoreProvider } from './Store.jsx';
 
 // admin pages
 import AdminRoute from './components/AdminRoute.jsx'; // lesson 5
-import Dashboard from './pages/Dashboard.jsx'; // lesson 7
-import Messages from './pages/Messages.jsx'; // lesson 6
+import Dashboard from './pages/admin/Dashboard.jsx'; // lesson 7
+import Messages from './pages/admin/Messages.jsx'; // lesson 6
+import UserList from './pages/admin/UserList.jsx'; // lesson 8
+import UserEdit from './pages/admin/UserEdit.jsx'; // lesson 8
 
 // pages
 import Home from './pages/Home.jsx'; // lesson 3
@@ -71,6 +73,22 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
+      {
+        path: 'admin/users', // lesson 8
+        element: (
+          <AdminRoute>
+            <UserList />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'admin/users/:id', // lesson 8
+        element: (
+          <AdminRoute>
+            <UserEdit />
+          </AdminRoute>
+        ),
+      },
     ],
   },
 ]);
@@ -90,3 +108,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 4 added Contact, Design
 // lesson 6 added Signin, Signup, Messages
 // lesson 7 added Dashboard, Profile, ResetPassword, ForgetPassword
+// lesson 8 added UserList, UserEdit, moved Dashboard, Messages (admin pages folder)

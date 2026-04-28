@@ -1,10 +1,9 @@
-// NEW: useLocation added to preserve redirect target after login lesson 6
+// src/components/Header.jsx
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { Store } from '../Store';
 
 export default function Header() {
-  // NEW: using Store context instead of propUser for global state
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
@@ -47,8 +46,7 @@ export default function Header() {
 
           <div className='collapse navbar-collapse' id='mainNavbar'>
             <ul className='navbar-nav ms-auto w-100 justify-content-end align-items-lg-center'>
-              {/* UPDATED: "About Us" is now a dropdown with multiple internal links */}
-              {/* lesson 3 */}
+              {/* lesson 4 */}
               <li className='nav-item dropdown'>
                 <button
                   className='nav-link dropdown-toggle'
@@ -74,6 +72,7 @@ export default function Header() {
                   </li>
                 </ul>
               </li>
+              {/* end lesson 4 */}
 
               <li className='nav-item'>
                 <NavLink to='/portfolio' className={navLink}>
@@ -82,14 +81,13 @@ export default function Header() {
                 </NavLink>
               </li>
 
-              {/* UPDATED: route renamed from '/design' → '/webdesign' */}
+              {/* Web Design (use your preferred route) */}
               <li className='nav-item'>
                 <NavLink to='/webdesign' className={navLink}>
                   <i className='fas fa-layer-group' aria-hidden='true' /> Web
                   Design
                 </NavLink>
               </li>
-              {/* end lesson 3 */}
 
               {/* User Menu lesson 6 */}
               {userInfo ? (
@@ -154,12 +152,14 @@ export default function Header() {
                     aria-labelledby='adminDropdown'
                   >
                     {/* lesson 7 */}
+                    {/* lesson 8 moved into new admin folder */}
                     <li>
                       <Link className='dropdown-item' to='/admin/dashboard'>
                         Website Dashboard
                       </Link>
                     </li>
 
+                    {/* lesson 8 */}
                     <li>
                       <Link className='dropdown-item' to='/admin/users'>
                         Users
@@ -173,6 +173,7 @@ export default function Header() {
                     </li>
 
                     {/* lesson 6 */}
+                    {/* lesson 8 moved into new admin folder */}
                     <li>
                       <Link className='dropdown-item' to='/admin/messages'>
                         Messages
@@ -189,7 +190,7 @@ export default function Header() {
   );
 }
 
-// If you want to review the commented teaching version of the Header.jsx setup, check commit lesson-03.
+// If you want to review the commented teaching version of the Header.jsx setup, check commit lesson-04.
 
 // Lesson 6 updates summary:
 // • Replaced prop-based userInfo with Context from Store
@@ -198,4 +199,5 @@ export default function Header() {
 // • Changed /design → /webdesign
 // • Using Contact/Messages
 
-// lesson-7 using Dashboard/Profile
+// lesson-07 using Dashboard/Profile
+// Lesson-08 new pages/admin folder, moved Dashboard, Messages, Users

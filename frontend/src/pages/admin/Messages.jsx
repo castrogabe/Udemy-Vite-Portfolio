@@ -1,12 +1,12 @@
 import { useEffect, useContext, useState, useReducer } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Store } from '../Store';
+import { Store } from '../../Store';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import LoadingBox from '../components/LoadingBox.jsx';
-import MessageBox from '../components/MessageBox.jsx';
-import { getError } from '../utils';
-import AdminPagination from '../components/AdminPagination.jsx'; // ensure filename matches
+import LoadingBox from '../../components/LoadingBox.jsx';
+import MessageBox from '../../components/MessageBox.jsx';
+import { getError } from '../../utils';
+import AdminPagination from '../../components/AdminPagination.jsx'; // ensure filename matches
 
 // ---- helpers ----
 async function fetchJSON(url, options = {}) {
