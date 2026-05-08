@@ -314,3 +314,20 @@ UserEdit.jsx > added
 UserList.jsx > added
 
 main.jsx > updated, pages > added admin pages, updated forms
+
+# 9th Commit/lesson-Websites, remove slug
+
+BACKEND
+folder: models
+websiteModel.js > updated: removed slug
+
+folder: routes
+websiteRoutes.js > updated: removed slug
+
+FRONTEND
+folder: pages > admin
+UserList.jsx > updated
+WebsiteEdit.jsx > added (slug commented out)
+WebsiteList.jsx > added
+
+main.jsx > updated with WebsiteList.jsx, WebsiteEdit.jsx

@@ -25,7 +25,6 @@ const data = {
   websites: [
     {
       name: 'exoticwoodpen.com',
-      slug: 'exoticwoodpen',
       image: '/images/ewp.jpg',
       language: 'MERN Stack',
       languageDescription: 'MongoDB, Express, ReactJS, Node.js',
@@ -35,7 +34,6 @@ const data = {
     },
     {
       name: 'antiquepox.com',
-      slug: 'antiquepox',
       image: '/images/antiques.png',
       language: 'MERN Stack',
       languageDescription: 'MongoDB, Express, ReactJS, Node.js',
@@ -45,7 +43,6 @@ const data = {
     },
     {
       name: 'artperfection.com',
-      slug: 'art-perfection',
       image: '/images/art.png',
       language: 'MEAN Stack',
       languageDescription: 'MongoDB, Express, AngularJS, Node.js',
@@ -55,7 +52,6 @@ const data = {
     },
     {
       name: 'homepaintpros.com',
-      slug: 'home-paint-pros',
       image: '/images/home-paint.png',
       language: 'LAMP Stack',
       languageDescription: 'Linux, Apache, MySql, PHP, Composer',
@@ -65,7 +61,6 @@ const data = {
     },
     {
       name: 'teamcode.com',
-      slug: 'team-code',
       image: '/images/teamcode.png',
       language: 'MERN Stack',
       languageDescription: 'MongoDB, Express, ReactJS, Node.js',
@@ -79,3 +74,4 @@ const data = {
 export default data;
 
 // If you want to review the commented teaching version of the data.js setup, check commit lesson-05.
+// Remove slug, lesson-09.

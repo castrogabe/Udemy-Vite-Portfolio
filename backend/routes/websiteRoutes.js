@@ -21,7 +21,6 @@ websiteRouter.post(
   expressAsyncHandler(async (req, res) => {
     const newWebsite = new Website({
       name: String(Date.now()),
-      slug: String(Date.now()),
       image: '/images/',
       language: 'MERN Stack',
       languageDescription: 'MongoDB, Express, AngularJS, Node.js',
@@ -42,7 +41,6 @@ websiteRouter.put(
     if (!website) return res.status(404).send({ message: 'Website Not Found' });
 
     website.name = req.body.name;
-    website.slug = req.body.slug;
     website.image = req.body.image;
     website.language = req.body.language;
     website.languageDescription = req.body.languageDescription;
@@ -134,3 +132,4 @@ websiteRouter.get(
 export default websiteRouter;
 
 // If you want to review the commented teaching version of the websiteRoutes.js setup, check commit lesson-05.
+// Remove slug, lesson-09.
