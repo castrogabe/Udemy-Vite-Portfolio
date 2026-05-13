@@ -1,3 +1,4 @@
+// server.js (ESM)
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -10,35 +11,42 @@ import seedRouter from './routes/seedRoutes.js'; // lesson 6
 import userRouter from './routes/userRoutes.js'; // lesson 5
 import messageRouter from './routes/messageRoutes.js'; // lesson 5
 import summaryRouter from './routes/summaryRoutes.js'; // lesson 6
-import websiteRouter from './routes/websiteRoutes.js'; // lesson 6
+import websiteRouter from './routes/websiteRoutes.js'; // lesson 6 <= updated lesson 9
 import uploadRouter from './routes/uploadRoutes.js'; // lesson 6
+import fs from 'node:fs'; // lesson 10
 
-dotenv.config(); // Load environment variables from .env
+dotenv.config();
 
-// 1️ Setup __dirname Equivalent for ESM
+// __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 2️ Connect to MongoDB
+// DB connect
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err.message));
+  .then(() => console.log('connected to db'))
+  .catch((err) => console.error('Mongo error:', err.message));
+
 const app = express();
 
-app.use(cors()); // Enable cross-origin requests (frontend ↔ backend)
-app.use(express.json()); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// 4️ Mount All Route Modules
+// uploads lesson-10
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+app.use('/uploads', express.static(uploadDir));
+
+// routes
 app.use('/api/users', userRouter); // lesson 5
 app.use('/api/messages', messageRouter); // lesson 5
 app.use('/api/seed', seedRouter); // lesson 6
 app.use('/api/summary', summaryRouter); // lesson 6
-app.use('/api/websites', websiteRouter); // lesson 6 (plural)
+app.use('/api/websites', websiteRouter); // lesson 9 <= updated from website
 app.use('/api/upload', uploadRouter); // lesson 6
 
-// 5️ (Optional) Legacy Endpoints for Quick Testing
+// Simple list
 app.get('/api/websites', async (_req, res) => {
   try {
     const websites = await Website.find();
@@ -48,12 +56,14 @@ app.get('/api/websites', async (_req, res) => {
   }
 });
 
+// Optional: pagination/search endpoint to match your Vite frontend call
+// GET /api/websites/search?page=1&pageSize=10
 app.get('/api/websites/search', async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const pageSize = Math.max(parseInt(req.query.pageSize || '10', 10), 1);
 
-    const filter = {}; // Add keyword or category filters later
+    const filter = {}; // add keyword/category filters later
     const countWebsites = await Website.countDocuments(filter);
     const pages = Math.max(Math.ceil(countWebsites / pageSize), 1);
     const skip = (page - 1) * pageSize;
@@ -69,7 +79,11 @@ app.get('/api/websites/search', async (req, res) => {
   }
 });
 
-// 6 Serve Frontend Build in Production
+/**
+ * Static files:
+ * - In dev (Vite), DO NOT serve frontend here. Use Vite dev server + proxy.
+ * - In prod, serve the built Vite app from ../frontend/dist
+ */
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.resolve(__dirname, '../frontend/dist');
   app.use(express.static(distPath));
@@ -78,12 +92,13 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// 7 Start Server
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
+  console.log(`serve at http://localhost:${port}`);
 });
 
 // If you want to review the commented teaching version of the server.js setup, check commit lesson-05.
 // lesson-05 added userRouter, messageRouter
 // lesson-06 added seedRouter, summaryRouter, websiteRouter, uploadRouter
+// lesson-09 updated from website
+// lesson-10 /uploads

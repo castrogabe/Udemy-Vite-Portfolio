@@ -1,4 +1,36 @@
-/* Portfolio image utility (also used on About image) */
-.img-portfolio {
-  max-width: 100%;
+/* keeps hover zoom inside the box */
+.portfolio-card {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* responsive image wrapper with a uniform 16:9 crop */
+.portfolio-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* consistent visual height */
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* image fills the box; smooth hover */
+.portfolio-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.portfolio-img-wrap img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* small admin/list thumbnails stay as-is */
+.img-thumb {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
 }

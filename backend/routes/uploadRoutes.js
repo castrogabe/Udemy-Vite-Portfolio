@@ -35,9 +35,10 @@ const upload = multer({
 
 uploadRouter.post('/', isAuth, isAdmin, upload.single('image'), (req, res) => {
   const normalized = `/${req.file.path}`.replace(/\\/g, '/');
-  res.send(normalized);
+  res.json({ path: normalized }); // <<< return JSON, not plain string | lesson 10
 });
 
 export default uploadRouter;
 
 // If you want to review the commented teaching version of the seed uploadRoutes.js setup, check commit lesson-06.
+// lesson-10 updated return JSON
