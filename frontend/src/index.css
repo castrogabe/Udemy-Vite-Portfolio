@@ -13,7 +13,7 @@
 @import './styles/design.css';
 @import './styles/about.css';
 @import './styles/search.css';
-@import './styles/pagination.css';
+@import './styles/homecontentedit.css';
 
 /* Overrides last */
 @import './styles/media-queries.css';
