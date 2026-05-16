@@ -5,12 +5,10 @@ import { isAuth, isAdmin } from '../utils.js';
 
 const router = express.Router();
 
-// GET /api/homecontent - Fetch home content
 router.get(
   '/',
   asyncHandler(async (req, res) => {
     const content = await HomeContent.findOne({});
-    // Return an empty object with an empty sections array if no content is found
     if (!content) {
       res.json({ jumbotronText: [], sections: [] });
     } else {
@@ -19,7 +17,6 @@ router.get(
   })
 );
 
-// PUT /api/homecontent - Update home content
 router.put(
   '/',
   isAuth,
@@ -36,3 +33,5 @@ router.put(
 );
 
 export default router;
+
+// If you want to review the commented teaching version of the homeContentRoutes.js setup, check commit lesson-11.

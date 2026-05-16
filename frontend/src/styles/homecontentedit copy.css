@@ -1,0 +1,20 @@
+/* Make the "Edit Pages" pill look nice */
+.dropdown-item.bg-success {
+  border-radius: 0.375rem; /* rounded corners */
+}
+
+/* Show a caret on submenu trigger and align it right */
+.dropdown-item.dropdown-toggle::after {
+  float: right;
+  margin-left: 0.5rem;
+}
+
+/* Position the nested menu a touch to the right */
+.dropdown-menu .dropend .dropdown-menu {
+  margin-left: 0.25rem;
+}
+
+/* Optional: subtle highlight on hover for nested items */
+.dropdown-menu .dropdown-item:hover {
+  filter: brightness(0.98);
+}
