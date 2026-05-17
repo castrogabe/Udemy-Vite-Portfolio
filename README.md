@@ -429,3 +429,29 @@ folder: styles
 homecontentedit.css > added
 
 main.jsx > updated with admin edit pages
+
+# 13th Commit/lesson-Design Dynamic
+
+BACKEND
+folder: models
+designContentModel.js > added
+
+folder: routes
+designContentRoutes.js > added
+
+server.js > updated with designContentRoutes
+
+FRONTEND
+folder: components
+Header.jsx > updated for DesignEdit page
+folder: pages
+Design.jsx > updated (dynamic)
+
+folder: admin/pages
+designContentEdit.jsx > added
+
+main.jsx > uncomment admin/DesignEdit
+
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev

@@ -18,9 +18,9 @@ import WebsiteList from './pages/admin/WebsiteList.jsx'; // lesson 9
 import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
 import HomeContentEdit from './pages/admin/HomeContentEdit.jsx'; // lesson 11
 import AboutUsEdit from './pages/admin/AboutUsEdit.jsx'; // lesson 12
+import DesignEdit from './pages/admin/DesignEdit.jsx'; // lesson 13
 
 // (optional placeholders if you already linked them in the menu)
-// import DesignEdit from './pages/admin/DesignEdit.jsx';
 // import Portfolio from './pages/admin/PortfolioEdit.jsx';
 
 // pages
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: 'admin/aboutusedit',
+        path: 'admin/aboutusedit', // lesson 12
         element: (
           <AdminRoute>
             <AboutUsEdit />
@@ -133,14 +133,16 @@ const router = createBrowserRouter([
         ),
       },
 
+      {
+        path: 'admin/designedit', // lesson 13
+        element: (
+          <AdminRoute>
+            <DesignEdit />
+          </AdminRoute>
+        ),
+      },
+
       // future edit pages
-      // {
-      //   path: 'admin/designedit',
-      //   element: (
-      //     <AdminRoute>
-      //       <DesignEdit />
-      //     </AdminRoute>
-      //   ),
       // },
       // {
       //   path: 'admin/portfolioedit',
@@ -172,3 +174,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 8 added UserList, UserEdit, moved Dashboard, Messages (admin pages folder)
 // lesson 9 added WebsiteList, WebsiteEdit
 // lesson 11 added HomeContentEdit
+// lesson 12 added AboutUsEdit
+// lesson 13 added DesignEdit

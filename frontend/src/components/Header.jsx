@@ -215,6 +215,7 @@ export default function Header() {
                           </Link>
                         </li>
 
+                        {/* lesson 13 */}
                         <li>
                           <Link
                             className='dropdown-item'
@@ -260,3 +261,4 @@ export default function Header() {
 // lesson-11 updated with admin Edit Pages submenu (green)
 // lesson-11 using the admin/edit HomeEdit page
 // lesson-12 using the admin/edit AboutUsEdit page
+// lesson-13 using the admin/edit DesignEdit page
