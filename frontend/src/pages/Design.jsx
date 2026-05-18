@@ -1,4 +1,3 @@
-// src/pages/Design.jsx — Lesson 13 (Dynamic Design Page)
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
@@ -12,7 +11,6 @@ export default function Design() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Lesson 13: Design content now comes from the backend (dynamic)
     const fetchContent = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/designcontent`);
@@ -43,40 +41,18 @@ export default function Design() {
     );
   }
 
-  // Lesson 13:
-  // • sections[] comes from MongoDB
-  // • the *first* section gets special 2-column layout with 1 image on the right
   const sections = Array.isArray(content.sections) ? content.sections : [];
   const firstSection = sections[0];
   const firstSectionImage = firstSection?.images?.[0]; // only the 1st image is displayed in the top split layout
   const remainingSections = sections.slice(1);
 
-  // -----------------------------------------------------------------------------
-  // NOTE ABOUT LoadingBox
-  //
-  // This page loads all Design content dynamically from the backend.
-  //
-  // Why do we wait?
-  // - The entire layout (sections, images, buttons, jumbotron) depends on API data
-  // - Rendering early would cause missing sections or visible layout shifts
-  //
-  // LoadingBox ensures the Design page is only rendered
-  // AFTER the content has been fully loaded.
-  //
-  // In later lessons, this can be replaced with Skeleton components,
-  // but the conditional rendering logic stays exactly the same.
-  // -----------------------------------------------------------------------------
-
-  // -------------------------------------------------------------------------
-  // Render UI
-  // -------------------------------------------------------------------------
   return (
     <>
       <Helmet>
         <title>Design</title>
       </Helmet>
 
-      {/* Lesson 13: Optional jumbotron image is now dynamic */}
+      {/* Optional Jumbotron Image */}
       {content.jumbotronImage?.url && (
         <div className='box'>
           <img
@@ -88,11 +64,11 @@ export default function Design() {
       )}
 
       <div className='content'>
-        {/* First section uses a special two-column layout */}
+        {/* Split layout: First section text on the left, first image on the right */}
         {firstSection ? (
           <div className='box'>
             <div className='row g-4 align-items-start'>
-              {/* Text Column */}
+              {/* Text Column (Left) */}
               <div className={firstSectionImage ? 'col-md-7' : 'col-md-12'}>
                 {firstSection.title && <h2>{firstSection.title}</h2>}
                 {firstSection.paragraphs?.map((p, i) => (
@@ -107,7 +83,7 @@ export default function Design() {
                 )}
               </div>
 
-              {/* Lesson 13: Right-side feature image */}
+              {/* Certificate/Image Column (Right) - Use firstSectionImage data here */}
               {firstSectionImage && (
                 <div className='col-md-5'>
                   <div className='p-3 bg-light border rounded text-center'>
@@ -128,13 +104,6 @@ export default function Design() {
           </div>
         ) : null}
 
-        {/* Lesson 13:
-          Remaining sections show:
-          • Title
-          • Multiple paragraphs
-          • Optional button (link + linkText)
-          • All section images (via SectionImages component)
-        */}
         {remainingSections.map((section, index) => (
           <div className='box' key={index}>
             {section.title && <h2>{section.title}</h2>}
@@ -142,14 +111,12 @@ export default function Design() {
               <p key={i}>{paragraph}</p>
             ))}
 
-            {/* New in Lesson 13: optional button per section */}
             {section.link && section.linkText && (
               <a href={section.link} className='my-button'>
                 {section.linkText}
               </a>
             )}
 
-            {/* New in Lesson 13: display ALL images for the section */}
             <SectionImages images={section.images} />
           </div>
         ))}

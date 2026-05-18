@@ -1,19 +1,35 @@
-// src/pages/Portfolio.jsx
-import { useEffect, useReducer } from 'react';
+// src/pages/Portfolio.jsx — Lesson 14 (Dynamic Portfolio Page)
+
+import { useEffect, useReducer, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+
 import LoadingBox from '../components/LoadingBox.jsx';
 import MessageBox from '../components/MessageBox.jsx';
 import WebsiteCard from '../components/WebsiteCard.jsx';
 import Pagination from '../components/Pagination.jsx';
 
-// If you have an API base URL, set VITE_API_URL in .env.* files
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
-const reducer = (state, action) => {
+// -----------------------------------------------------------------------------
+// Lesson 14:
+// Reducer for dynamic portfolio website items
+//
+// Why useReducer instead of useState?
+// - multiple related state updates
+// - cleaner async loading flow
+// - easier pagination handling
+// - scales better as filtering/searching grows later
+// -----------------------------------------------------------------------------
+const websiteReducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
-      return { ...state, loading: true, error: '' };
+      return {
+        ...state,
+        loading: true,
+        error: '',
+      };
+
     case 'FETCH_SUCCESS':
       return {
         ...state,
@@ -24,23 +40,61 @@ const reducer = (state, action) => {
         pages: action.payload.pages,
         countWebsites: action.payload.countWebsites,
       };
+
     case 'FETCH_FAIL':
       return {
         ...state,
         loading: false,
-        error: action.payload || 'Request failed',
+        error: action.payload,
       };
+
     default:
       return state;
   }
 };
 
 export default function Portfolio() {
+  // -----------------------------------------------------------------------------
+  // Lesson 14:
+  // Pagination now uses URL search params
+  //
+  // Example:
+  // /portfolio?page=2
+  //
+  // This keeps pagination:
+  // • bookmarkable
+  // • shareable
+  // • browser-history friendly
+  // -----------------------------------------------------------------------------
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || 1);
 
+  // -----------------------------------------------------------------------------
+  // Lesson 14:
+  // Dynamic portfolio intro content
+  //
+  // This content is separate from the website cards themselves.
+  //
+  // WHY?
+  // - easier CMS editing
+  // - cleaner separation of concerns
+  // - reusable intro area
+  // - website cards remain independently managed
+  // -----------------------------------------------------------------------------
+  const [portfolioContent, setPortfolioContent] = useState({
+    paragraphs: [],
+    link: '/contact',
+    linkText: 'Contact for Quote',
+  });
+
+  const [contentLoading, setContentLoading] = useState(true);
+  const [contentError, setContentError] = useState('');
+
+  // -----------------------------------------------------------------------------
+  // Dynamic Website List State
+  // -----------------------------------------------------------------------------
   const [{ loading, error, websites = [], pages = 0 }, dispatch] = useReducer(
-    reducer,
+    websiteReducer,
     {
       loading: true,
       error: '',
@@ -51,45 +105,138 @@ export default function Portfolio() {
     }
   );
 
+  // -----------------------------------------------------------------------------
+  // Lesson 14:
+  // Fetch dynamic portfolio intro content
+  //
+  // Powered by:
+  // • portfolioContentModel
+  // • portfolioContentRoutes
+  //
+  // This controls:
+  // • intro paragraphs
+  // • CTA button
+  // • CTA link
+  // -----------------------------------------------------------------------------
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/portfoliocontent`);
+        const data = await res.json();
+
+        if (res.ok) {
+          setPortfolioContent({
+            paragraphs: Array.isArray(data.paragraphs) ? data.paragraphs : [],
+            link: data.link || '/contact',
+            linkText: data.linkText || 'Contact for Quote',
+          });
+
+          setContentError('');
+        } else {
+          setContentError(data.message || 'Failed to load portfolio content');
+        }
+      } catch (err) {
+        setContentError(err.message || 'Network error fetching content');
+      } finally {
+        setContentLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  // -----------------------------------------------------------------------------
+  // Lesson 14:
+  // Fetch dynamic website portfolio items
+  //
+  // Powered by:
+  // • websiteModel
+  // • websiteRoutes
+  //
+  // Pagination support included.
+  // -----------------------------------------------------------------------------
   useEffect(() => {
     let ignore = false;
 
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
+
       try {
-        const res = await fetch(
-          `${API_BASE}/api/websites/search?page=${page}`,
-          {
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include', // remove if you don't use cookies
-          }
-        );
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || `HTTP ${res.status}`);
-        }
+        const res = await fetch(`${API_BASE}/api/websites/search?page=${page}`);
+
         const data = await res.json();
-        if (!ignore) dispatch({ type: 'FETCH_SUCCESS', payload: data });
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Failed to fetch websites');
+        }
+
+        if (!ignore) {
+          dispatch({
+            type: 'FETCH_SUCCESS',
+            payload: {
+              websites: data.websites || [],
+              page: data.page,
+              pages: data.pages,
+              countWebsites: data.countWebsites || 0,
+            },
+          });
+        }
       } catch (err) {
-        if (!ignore) dispatch({ type: 'FETCH_FAIL', payload: err?.message });
+        if (!ignore) {
+          dispatch({
+            type: 'FETCH_FAIL',
+            payload: err.message,
+          });
+        }
       }
     };
 
     fetchData();
+
     return () => {
       ignore = true;
     };
   }, [page]);
 
-  // For your Pagination component
+  // -----------------------------------------------------------------------------
+  // Pagination helper
+  // -----------------------------------------------------------------------------
   const getFilterUrl = (filter) => {
     const filterPage = filter.page || page;
-    // if your route is /portfolio, keep the path in links
-    return { pathname: '/portfolio', search: `?page=${filterPage}` };
+
+    return {
+      pathname: '/portfolio',
+      search: `?page=${filterPage}`,
+    };
   };
 
-  const goToPage = (p) => setSearchParams({ page: String(p) });
+  // -----------------------------------------------------------------------------
+  // Update page number in URL
+  // -----------------------------------------------------------------------------
+  const goToPage = (p) => {
+    setSearchParams({ page: String(p) });
+  };
 
+  // -----------------------------------------------------------------------------
+  // NOTE ABOUT LoadingBox
+  //
+  // This page intentionally uses TWO loading systems:
+  //
+  // 1. portfolioContent loading
+  //    → top editable CMS content
+  //
+  // 2. website loading
+  //    → dynamic website portfolio cards
+  //
+  // Keeping them separate allows:
+  // • smoother rendering
+  // • cleaner user experience
+  // • easier future skeleton upgrades
+  // -----------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------
+  // Render UI
+  // -----------------------------------------------------------------------------
   return (
     <div className='content'>
       <Helmet>
@@ -97,30 +244,54 @@ export default function Portfolio() {
       </Helmet>
 
       <br />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Lesson 14: Dynamic Portfolio Intro Content */}
+      {/* ------------------------------------------------------------------ */}
       <div className='box'>
-        <p>
-          ~ Discover the creativity and innovation in our meticulously crafted
-          website portfolio. Dive into our collection and get inspired! ~
-        </p>
-        <Link to='/contact'>
-          <button className='btn btn-primary mt-3'>Contact for Quote</button>
-        </Link>
+        {contentLoading ? (
+          <LoadingBox size='sm' />
+        ) : contentError ? (
+          <MessageBox variant='danger'>{contentError}</MessageBox>
+        ) : (
+          <>
+            {portfolioContent.paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+
+            {/* Optional CTA Button */}
+            {portfolioContent.link && portfolioContent.linkText && (
+              <Link to={portfolioContent.link}>
+                <button className='btn btn-primary mt-3'>
+                  {portfolioContent.linkText}
+                </button>
+              </Link>
+            )}
+          </>
+        )}
       </div>
 
       <br />
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Dynamic Website Portfolio Cards */}
+      {/* ------------------------------------------------------------------ */}
       {loading ? (
         <LoadingBox />
       ) : error ? (
         <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
         <>
+          {/* Empty State */}
           {websites.length === 0 && <MessageBox>No Website Found</MessageBox>}
 
-          {/* Grid without react-bootstrap */}
+          {/* Website Grid */}
           <div className='row g-3'>
-            {websites.map((website, idx) => (
-              <div className='col-12 box' key={idx}>
+            {websites.map((website) => (
+              <div className='col-12 box' key={website._id || website.name}>
+                {/* Lesson 14:
+                    WebsiteCard reused for dynamic portfolio rendering
+                */}
                 <WebsiteCard website={website} />
               </div>
             ))}
@@ -131,8 +302,9 @@ export default function Portfolio() {
             currentPage={page}
             totalPages={pages}
             getFilterUrl={getFilterUrl}
-            onPageChange={goToPage} // if your Pagination can call this; otherwise it can use getFilterUrl
+            onPageChange={goToPage}
           />
+
           <br />
         </>
       )}
@@ -140,4 +312,13 @@ export default function Portfolio() {
   );
 }
 
-// If you want to review the commented teaching version of the Portfolio.jsx setup, check commit lesson-03.
+// If you want to review the commented teaching version
+// of the Portfolio.jsx setup, check commit lesson-14.
+
+// lesson-14:
+// • Dynamic portfolio intro content powered by portfolioContentModel
+// • Dynamic website cards powered by websiteModel
+// • Pagination support added
+// • WebsiteCard reused for portfolio rendering
+// • URL-based pagination using search params
+// • Separate loading states for CMS content + website cards

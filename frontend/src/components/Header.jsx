@@ -225,6 +225,7 @@ export default function Header() {
                           </Link>
                         </li>
 
+                        {/* lesson 14 */}
                         <li>
                           <Link
                             className='dropdown-item'
@@ -262,3 +263,4 @@ export default function Header() {
 // lesson-11 using the admin/edit HomeEdit page
 // lesson-12 using the admin/edit AboutUsEdit page
 // lesson-13 using the admin/edit DesignEdit page
+// lesson-14 using the admin/edit PortfolioEdit page

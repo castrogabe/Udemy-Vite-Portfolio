@@ -8,14 +8,11 @@ const API_BASE = import.meta.env.VITE_API_URL ?? '';
 export default function DesignEdit() {
   const [content, setContent] = useState({
     sections: [],
-    jumbotronImage: null, // Lesson 13: Design now has an optional jumbotron image
+    jumbotronImage: null,
   });
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // ------------------------------------------------------------
-  // Lesson 13: Load dynamic design content (sections + jumbotron)
-  // ------------------------------------------------------------
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -41,9 +38,6 @@ export default function DesignEdit() {
     fetchContent();
   }, [userInfo]);
 
-  // -----------------------
-  // Section field modifiers
-  // -----------------------
   const handleTitleChange = (sectionIndex, e) => {
     const newSections = [...content.sections];
     newSections[sectionIndex].title = e.target.value;
@@ -68,10 +62,6 @@ export default function DesignEdit() {
     setContent({ ...content, sections: newSections });
   };
 
-  // ------------------------------------------------------------
-  // Lesson 13: Add new section including new fields:
-  //   link, linkText → used for optional buttons in the Design page.
-  // ------------------------------------------------------------
   const handleAddSection = () => {
     setContent((prevContent) => ({
       ...prevContent,
@@ -88,10 +78,6 @@ export default function DesignEdit() {
     setContent({ ...content, sections: newSections });
   };
 
-  // ------------------------------------------------------------
-  // Lesson 13: Upload a section image
-  // Backend returns: { image: { url, name } }
-  // ------------------------------------------------------------
   const handleImageUpload = async (sectionIndex, e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -123,9 +109,6 @@ export default function DesignEdit() {
     }
   };
 
-  // ------------------------------------------------------------
-  // Lesson 13: Delete image from DB + filesystem
-  // ------------------------------------------------------------
   const handleDeleteImage = async (sectionIndex, imageIndex) => {
     const imageToDelete = content.sections[sectionIndex].images[imageIndex];
 
@@ -153,9 +136,6 @@ export default function DesignEdit() {
     }
   };
 
-  // ------------------------------------------------------------
-  // Lesson 13: Upload jumbotron image for the Design page
-  // ------------------------------------------------------------
   const handleJumbotronUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -189,9 +169,6 @@ export default function DesignEdit() {
     }
   };
 
-  // ------------------------------------------------------------
-  // Delete jumbotron image
-  // ------------------------------------------------------------
   const handleDeleteJumbotron = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/designcontent/jumbotron`, {
@@ -211,9 +188,6 @@ export default function DesignEdit() {
     }
   };
 
-  // ------------------------------------------------------------
-  // Lesson 13: Save all sections (bulk update)
-  // ------------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -242,35 +216,11 @@ export default function DesignEdit() {
     }
   };
 
-  // ------------------------------------------------------------
-  // NEW: Generic handler for link + linkText fields per section
-  // ------------------------------------------------------------
   const handleSectionFieldChange = (sectionIndex, field, value) => {
     const newSections = [...content.sections];
     newSections[sectionIndex][field] = value;
     setContent({ ...content, sections: newSections });
   };
-
-  // ------------------------------------------------------------
-  // NOTE ABOUT LoadingBox (INTENTIONAL OMISSION)
-
-  // This editor does NOT use LoadingBox.
-
-  // Why?
-  // - The editor can safely render with empty state
-  // - Sections and images are added progressively
-  // - This provides a smoother CMS-style editing experience
-
-  // In contrast:
-  // - Public pages (Design, About) MUST wait for data
-  // - Edit forms like WebsiteEdit MUST block rendering
-
-  // This distinction is intentional and important.
-  // ------------------------------------------------------------
-
-  // -------------------------------------------------------------------------
-  // Render UI
-  // -------------------------------------------------------------------------
 
   return (
     <div className='content'>
@@ -465,3 +415,5 @@ export default function DesignEdit() {
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the DesignEdit.jsx setup, check commit lesson-13.

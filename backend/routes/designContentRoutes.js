@@ -10,20 +10,11 @@ import { isAuth, isAdmin } from '../utils.js';
 
 const designContentRouter = express.Router();
 
-// -----------------------------------------------------------------------------
-// LESSON 13 — BACKEND SETUP FOR DYNAMIC DESIGN PAGE
-// This follows the same pattern as AboutContent (Lesson 12) but adds:
-//   • Optional jumbotron image
-//   • Section-level images
-//   • Section-level buttons (link + linkText)
-// -----------------------------------------------------------------------------
-
-// Resolve __dirname (ESM compatible)
+// Get __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Choose upload directory depending on environment
-// (Render uses /var/data/uploads)
+// Ensure upload directory exists
 const isProduction = process.env.NODE_ENV === 'production';
 const uploadDir = isProduction
   ? '/var/data/uploads'
@@ -35,15 +26,12 @@ if (!fs.existsSync(uploadDir)) {
   fs.chmodSync(uploadDir, 0o777); // allow server to write images
 }
 
-// -------------------------
-// Multer storage engine
-// -------------------------
+// Multer setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Unique file naming prevents collisions
     const uniqueName = `${Date.now()}-${file.originalname}`;
     cb(null, uniqueName);
   },
@@ -51,11 +39,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// -----------------------------------------------------------------------------
-// GET /api/designcontent
-// Returns the entire dynamic design page content
-// (same pattern as AboutContent from Lesson 12)
-// -----------------------------------------------------------------------------
+// GET /api/designcontent - Fetch design content
 designContentRouter.get(
   '/',
   asyncHandler(async (req, res) => {
@@ -64,11 +48,7 @@ designContentRouter.get(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/designcontent/image
-// Uploads an image for a *specific section*.
-// This is used in the DesignContentEdit screen.
-// -----------------------------------------------------------------------------
+// PUT /api/designcontent/image - Upload an image for a section
 designContentRouter.put(
   '/image',
   isAuth,
@@ -87,11 +67,7 @@ designContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// DELETE /api/designcontent/image
-// Removes a specific section image from disk.
-// Mirrors the AboutContent deletion logic.
-// -----------------------------------------------------------------------------
+// DELETE /api/designcontent/image - Delete a specific image from the file system
 designContentRouter.delete(
   '/image',
   isAuth,
@@ -112,11 +88,7 @@ designContentRouter.delete(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/designcontent/jumbotron
-// Uploads or replaces the *top hero image* of the Design page.
-// Supports auto-deleting the old jumbotron image.
-// -----------------------------------------------------------------------------
+// PUT /api/designcontent/jumbotron - Upload jumbotron image
 designContentRouter.put(
   '/jumbotron',
   isAuth,
@@ -151,10 +123,7 @@ designContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// DELETE /api/designcontent/jumbotron
-// Removes the hero image from both MongoDB and the filesystem.
-// -----------------------------------------------------------------------------
+// DELETE /api/designcontent/jumbotron - Remove jumbotron image
 designContentRouter.delete(
   '/jumbotron',
   isAuth,
@@ -177,11 +146,7 @@ designContentRouter.delete(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/designcontent
-// Replaces the entire list of design sections.
-// Same behavior as AboutContent's update route.
-// -----------------------------------------------------------------------------
+// PUT /api/designcontent - Replace sections
 designContentRouter.put(
   '/',
   isAuth,
@@ -199,11 +164,7 @@ designContentRouter.put(
   })
 );
 
-// -----------------------------------------------------------------------------
-// PUT /api/designcontent/section/:sectionIndex
-// Allows updating *only one* section instead of replacing all sections.
-// Used to support more advanced UI editors.
-// -----------------------------------------------------------------------------
+// PUT /api/designcontent/section/:sectionIndex - Update specific section
 designContentRouter.put(
   '/section/:sectionIndex',
   isAuth,
@@ -237,3 +198,5 @@ designContentRouter.put(
 );
 
 export default designContentRouter;
+
+// If you want to review the commented teaching version of the designContentRoutes.js setup, check commit lesson-13.

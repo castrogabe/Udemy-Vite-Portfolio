@@ -455,3 +455,29 @@ main.jsx > uncomment admin/DesignEdit
 Run Website:
 BACKEND: nvm use 20 > npm run dev
 FRONTEND: nvm use 20 > npm run dev
+
+# 14th Commit/lesson-Portfolio Dynamic
+
+BACKEND
+folder: models
+portfolioContentModel.js > added
+
+folder: routes
+portfolioContentRoutes.js > added
+
+server.js > updated with portfolioContentRoutes
+
+FRONTEND
+folder: components
+Header.jsx > updated for PortfolioEdit page
+
+folder: pages
+folder: admin/pages
+PortfolioContentEdit.jsx > added
+Portfolio.jsx > updated to make dynamic
+
+main.jsx > updated, uncommented PortfolioEdit.jsx
+
+Run Website:
+BACKEND: nvm use 20 > npm run dev
+FRONTEND: nvm use 20 > npm run dev

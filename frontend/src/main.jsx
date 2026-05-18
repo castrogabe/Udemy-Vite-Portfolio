@@ -19,9 +19,7 @@ import WebsiteEdit from './pages/admin/WebsiteEdit.jsx'; // lesson 9
 import HomeContentEdit from './pages/admin/HomeContentEdit.jsx'; // lesson 11
 import AboutUsEdit from './pages/admin/AboutUsEdit.jsx'; // lesson 12
 import DesignEdit from './pages/admin/DesignEdit.jsx'; // lesson 13
-
-// (optional placeholders if you already linked them in the menu)
-// import Portfolio from './pages/admin/PortfolioEdit.jsx';
+import PortfolioEdit from './pages/admin/PortfolioEdit.jsx'; // lesson 14
 
 // pages
 import Home from './pages/Home.jsx'; // lesson 3
@@ -142,16 +140,14 @@ const router = createBrowserRouter([
         ),
       },
 
-      // future edit pages
-      // },
-      // {
-      //   path: 'admin/portfolioedit',
-      //   element: (
-      //     <AdminRoute>
-      //       <PortfolioEdit />
-      //     </AdminRoute>
-      //   ),
-      // },
+      {
+        path: 'admin/portfolioedit', // lesson 14
+        element: (
+          <AdminRoute>
+            <PortfolioEdit />
+          </AdminRoute>
+        ),
+      },
     ],
   },
 ]);
@@ -176,3 +172,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 11 added HomeContentEdit
 // lesson 12 added AboutUsEdit
 // lesson 13 added DesignEdit
+// lesson 14 added PortfolioEdit
