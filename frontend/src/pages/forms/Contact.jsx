@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Helmet } from 'react-helmet-async'; // use react-helmet-async
+import { Helmet } from 'react-helmet-async';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
+import { SkeletonForm } from '../../components/skeletons';
 
 export default function Contact() {
   const [fullName, setFullName] = useState('');
@@ -8,6 +10,16 @@ export default function Contact() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Track artificial load
+  const [fetchDone, setFetchDone] = useState(false);
+  const isLoading = useDelayedLoading(fetchDone, 2000);
+
+  // Simulate initial load only (no data fetching here)
+  useState(() => {
+    const timer = setTimeout(() => setFetchDone(true), 800); // short fake fetch
+    return () => clearTimeout(timer);
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -21,16 +33,19 @@ export default function Contact() {
 
       if (!res.ok) throw new Error('Network response was not ok');
 
-      toast.success('Success, message sent!', { autoClose: 1000 });
+      toast.success('✅ Message sent successfully!', { autoClose: 1500 });
       setFullName('');
       setEmail('');
       setSubject('');
       setMessage('');
     } catch (err) {
-      toast.error('Message not sent', { autoClose: 1000 });
+      toast.error('❌ Failed to send message', { autoClose: 1500 });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  if (isLoading) return <SkeletonForm />;
 
   return (
     <div className='container'>
@@ -51,7 +66,7 @@ export default function Contact() {
             type='text'
             id='name'
             className='form-control'
-            placeholder='full name'
+            placeholder='Full name'
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
@@ -67,7 +82,7 @@ export default function Contact() {
             type='email'
             id='email'
             className='form-control'
-            placeholder='email'
+            placeholder='Email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -83,7 +98,7 @@ export default function Contact() {
             type='text'
             id='subject'
             className='form-control'
-            placeholder='ex: Landing Page or Full Stack?'
+            placeholder='e.g., Landing Page or Full Stack?'
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
@@ -99,7 +114,7 @@ export default function Contact() {
             id='message'
             className='form-control'
             rows='4'
-            placeholder='your message'
+            placeholder='Your message'
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
@@ -117,3 +132,4 @@ export default function Contact() {
 }
 
 // If you want to review the commented teaching version of the Contact.jsx setup, check commit lesson-04.
+// Lesson-14 Skeletons

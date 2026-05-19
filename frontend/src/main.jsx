@@ -6,6 +6,7 @@ import App from './App.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
+import './components/skeletons/Skeleton.css';
 import { StoreProvider } from './Store.jsx';
 
 // admin pages
@@ -26,7 +27,7 @@ import Home from './pages/Home.jsx'; // lesson 3
 import About from './pages/About.jsx'; // lesson 3
 import Design from './pages/Design.jsx'; // lesson 4
 import Portfolio from './pages/Portfolio.jsx'; // lesson 3
-import Contact from './pages/Contact.jsx'; // lesson 4
+import Contact from './pages/forms/Contact.jsx'; // lesson 4 > updated moved into forms lesson 15
 import Signin from './pages/forms/Signin.jsx'; // lesson 6
 import Signup from './pages/forms/Signup.jsx'; // lesson 6
 import Profile from './pages/forms/Profile.jsx'; // lesson 7
@@ -173,3 +174,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // lesson 12 added AboutUsEdit
 // lesson 13 added DesignEdit
 // lesson 14 added PortfolioEdit
+// lesson 15 ./components/Skeletons/Skeleton.css added

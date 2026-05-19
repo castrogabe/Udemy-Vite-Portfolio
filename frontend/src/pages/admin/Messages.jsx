@@ -3,10 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { Store } from '../../Store';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import { getError } from '../../utils';
-import AdminPagination from '../../components/AdminPagination.jsx'; // ensure filename matches
+import AdminPagination from '../../components/AdminPagination.jsx';
+import { SkeletonList } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 
 // ---- helpers ----
 async function fetchJSON(url, options = {}) {
@@ -63,9 +64,11 @@ export default function Messages() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
+  const [fetchDone, setFetchDone] = useState(false);
+  const loading = useDelayedLoading(fetchDone, 2000);
+
   const [
     {
-      loading,
       error,
       loadingDelete,
       successDelete,
@@ -126,11 +129,17 @@ export default function Messages() {
       }
     };
 
-    if (successDelete) {
-      dispatch({ type: 'DELETE_RESET' });
-    } else {
-      fetchData();
-    }
+    (async () => {
+      try {
+        if (successDelete) {
+          dispatch({ type: 'DELETE_RESET' });
+        } else {
+          await fetchData();
+        }
+      } finally {
+        setFetchDone(true); // ✅ runs no matter what
+      }
+    })();
   }, [page, userInfo, successDelete]);
 
   const deleteHandler = async (messageToDelete) => {
@@ -173,10 +182,10 @@ export default function Messages() {
         </h4>
 
         <div className='box'>
-          {loadingDelete && <LoadingBox />}
+          {loadingDelete && <SkeletonList />}
 
           {loading ? (
-            <LoadingBox />
+            <SkeletonList />
           ) : error ? (
             <MessageBox variant='danger'>{error}</MessageBox>
           ) : (
@@ -290,8 +299,8 @@ export default function Messages() {
         <AdminPagination
           currentPage={page}
           totalPages={pages}
-          isAdmin={true}
-          keyword='Messages'
+          basePath='/admin/messages'
+          showIfSinglePage // <-- forces it to render even with one page
         />
         <br />
       </div>
@@ -301,3 +310,4 @@ export default function Messages() {
 
 // If you want to review the commented teaching version of the Messages.jsx setup, check commit lesson-06.
 // lesson-08 moved Messages.jsx into admin folder
+// lesson-15 Skeletons

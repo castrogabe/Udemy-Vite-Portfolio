@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import { toast } from 'react-toastify';
 import { Store } from '../../Store';
 import { getError } from '../../utils';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 
 export default function ForgetPassword() {
   const navigate = useNavigate();
@@ -14,14 +15,16 @@ export default function ForgetPassword() {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // (optional) page skeleton loader like your original
-  const [isLoading, setIsLoading] = useState(true);
+  // ✅ skeleton control
+  const [fetchDone, setFetchDone] = useState(false);
+  const delayedLoading = useDelayedLoading(fetchDone, 1200);
+
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setFetchDone(true), 800); // smooth skeleton transition
+    return () => clearTimeout(timer);
   }, []);
 
-  // if signed in, bounce home
+  // redirect if already logged in
   useEffect(() => {
     if (userInfo) navigate('/');
   }, [navigate, userInfo]);
@@ -45,7 +48,8 @@ export default function ForgetPassword() {
     }
   };
 
-  if (isLoading) return <LoadingBox />;
+  // ✅ skeleton display
+  if (delayedLoading) return <SkeletonForm />;
 
   return (
     <div className='content'>
@@ -53,8 +57,9 @@ export default function ForgetPassword() {
         <title>Forget Password</title>
       </Helmet>
       <br />
+
       <div className='row'>
-        {/* Left: form */}
+        {/* Left column - form */}
         <div className='col-12 col-md-6'>
           <h4 className='box'>Forget Password</h4>
           <div className='box' style={{ maxWidth: 640 }}>
@@ -98,7 +103,7 @@ export default function ForgetPassword() {
           </div>
         </div>
 
-        {/* Right: image */}
+        {/* Right column - illustration */}
         <div className='col-12 col-md-6 d-flex align-items-center justify-content-center mt-3 mt-md-0'>
           <img
             src='/images/forget.jpg'
@@ -113,3 +118,4 @@ export default function ForgetPassword() {
 }
 
 // If you want to review the commented teaching version of the ForgetPassword.jsx setup, check commit lesson-07.
+// Lesson-14 Skeletons

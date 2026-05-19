@@ -1,56 +1,39 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../../Store';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import { toast } from 'react-toastify';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 export default function PortfolioEdit() {
-  /**
-   * Lesson 14:
-   * The Portfolio page is intentionally SIMPLE —
-   * no images, no sections, no arrays of objects.
-   *
-   * Flat structure:
-   *   - paragraphs[]  → main text blocks
-   *   - link          → optional CTA button URL
-   *   - linkText      → optional CTA button label
-   *
-   * This matches the PortfolioContent model.
-   */
+  // 1. SIMPLIFIED STATE to match the backend model
   const [content, setContent] = useState({
     paragraphs: [],
     link: '',
     linkText: '',
   });
-
   const { state } = useContext(Store);
   const { userInfo } = state;
-
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ---------------------------------------------------------
-  // FETCH the Portfolio content document
-  // Uses the same pattern as About/Design, but with flat data
-  // ---------------------------------------------------------
+  const [fetchDone, setFetchDone] = useState(false);
+  const loading = useDelayedLoading(fetchDone, 2000);
+
+  // --- Data Fetching ---
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        setLoading(true);
-
         const res = await fetch(`${API_BASE}/api/portfoliocontent`, {
           headers: userInfo
             ? { Authorization: `Bearer ${userInfo.token}` }
             : {},
         });
-
         const data = await res.json();
 
         if (res.ok) {
-          // Ensure safe defaults
           setContent({
             paragraphs: Array.isArray(data.paragraphs) ? data.paragraphs : [],
             link: data.link || '',
@@ -60,55 +43,49 @@ export default function PortfolioEdit() {
         } else {
           throw new Error(data.message || 'Failed to fetch content');
         }
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
         setError('Failed to load content');
         toast.error('Failed to load content', { autoClose: 1000 });
       } finally {
-        setLoading(false);
+        setFetchDone(true); // ✅ Important for skeleton timing
       }
     };
-
     fetchContent();
   }, [userInfo]);
 
-  // -----------------------------
-  // PARAGRAPH HANDLERS (Dynamic)
-  // -----------------------------
+  // --- Handlers for Paragraphs and Fields ---
+
+  // Update a single paragraph's text
   const handleParagraphChange = (paragraphIndex, e) => {
     const newParagraphs = [...content.paragraphs];
     newParagraphs[paragraphIndex] = e.target.value;
     setContent({ ...content, paragraphs: newParagraphs });
   };
 
+  // Add a new paragraph
   const handleAddParagraph = () => {
-    setContent((prev) => ({
-      ...prev,
-      paragraphs: [...prev.paragraphs, ''],
+    setContent((prevContent) => ({
+      ...prevContent,
+      paragraphs: [...prevContent.paragraphs, ''],
     }));
   };
 
+  // Delete a paragraph
   const handleDeleteParagraph = (paragraphIndex) => {
     const newParagraphs = [...content.paragraphs];
     newParagraphs.splice(paragraphIndex, 1);
     setContent({ ...content, paragraphs: newParagraphs });
   };
 
-  // ------------------------------------------------------
-  // GENERIC TEXT FIELD HANDLER
-  // For: link, linkText (CTA button fields)
-  // ------------------------------------------------------
+  // Generic handler for link and linkText fields
   const handleFieldChange = (field, value) => {
     setContent({ ...content, [field]: value });
   };
 
-  // ------------------------------------------------------
-  // SUBMIT updated Portfolio content
-  // PUT /api/portfoliocontent
-  // ------------------------------------------------------
+  // --- Submission Handler ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await fetch(`${API_BASE}/api/portfoliocontent`, {
         method: 'PUT',
@@ -116,12 +93,7 @@ export default function PortfolioEdit() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${userInfo.token}`,
         },
-
-        /**
-         * Note for students:
-         * Unlike About/Design, we do NOT nest objects.
-         * The Portfolio model uses a flat structure.
-         */
+        // 3. Send the simple, flat content structure
         body: JSON.stringify({
           paragraphs: content.paragraphs,
           link: content.link,
@@ -134,82 +106,65 @@ export default function PortfolioEdit() {
         throw new Error(data.message || 'Failed to update content');
       }
 
-      // Confirm updated values from backend
+      // Update state with confirmed data from the backend
       setContent({
         paragraphs: data.content.paragraphs,
         link: data.content.link,
         linkText: data.content.linkText,
       });
-
       toast.success('Content updated successfully');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to update content', { autoClose: 1000 });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update content', {
+        autoClose: 1000,
+      });
     }
   };
 
-  // ----------------------------------------
-  // Render fallback states
-  // ----------------------------------------
-  if (loading) return <LoadingBox />;
-  if (error) return <MessageBox variant='danger'>{error}</MessageBox>;
+  if (loading) return <SkeletonForm />;
 
-  // ---------------------------------------------------------
-  // NOTE ABOUT LoadingBox (IMPORTANT FOR STUDENTS)
-  //
-  // This admin page MUST wait for data before rendering.
-  //
-  // Why?
-  // - The form is pre-filled with existing Portfolio content
-  // - Text areas are controlled inputs tied to backend data
-  // - Rendering early would show empty fields
-  // - Admins could accidentally overwrite content
-  //
-  // LoadingBox prevents the form from rendering until
-  // the Portfolio content has finished loading.
-  //
-  // Later lessons may replace this with Skeleton components,
-  // but the conditional rendering logic stays the same.
-  // ---------------------------------------------------------
+  if (error) {
+    return <MessageBox variant='danger'>{error}</MessageBox>;
+  }
 
-  // ----------------------------------------
-  // Render UI
-  // ----------------------------------------
+  // --- Render ---
+
   return (
     <div className='content'>
       <Helmet>
         <title>Portfolio Edit</title>
       </Helmet>
-
       <br />
       <h1 className='box'>Portfolio Edit</h1>
-
       <form onSubmit={handleSubmit}>
+        {/* Portfolio Text Content */}
         <div className='mb-4 p-3 border rounded'>
           <h2 className='h4'>Main Portfolio Page Text</h2>
 
-          {/* Lesson 14: simple paragraph array */}
-          {content.paragraphs.map((paragraph, index) => (
-            <div key={index} className='mb-3'>
-              <label className='form-label'>Paragraph {index + 1}</label>
-
+          {/* Dynamic Paragraphs */}
+          {content.paragraphs.map((paragraph, paragraphIndex) => (
+            <div key={paragraphIndex} className='mb-3'>
+              <label
+                htmlFor={`formParagraph${paragraphIndex}`}
+                className='form-label'
+              >
+                Paragraph {paragraphIndex + 1}
+              </label>
               <textarea
                 className='form-control'
                 rows={3}
                 value={paragraph}
-                onChange={(e) => handleParagraphChange(index, e)}
+                onChange={(e) => handleParagraphChange(paragraphIndex, e)}
               />
-
               <button
                 type='button'
                 className='btn btn-danger mt-2'
-                onClick={() => handleDeleteParagraph(index)}
+                onClick={() => handleDeleteParagraph(paragraphIndex)}
               >
                 Delete Paragraph
               </button>
             </div>
           ))}
-
           <button
             type='button'
             className='btn btn-secondary mt-2 me-2'
@@ -222,24 +177,24 @@ export default function PortfolioEdit() {
 
           <h2 className='h4'>Call-to-Action Button</h2>
 
-          {/* CTA Text */}
+          {/* Button Text Input */}
           <div className='mb-3'>
             <label className='form-label'>Button Text (Optional)</label>
             <input
               type='text'
               className='form-control'
-              value={content.linkText}
+              value={content.linkText || ''}
               onChange={(e) => handleFieldChange('linkText', e.target.value)}
             />
           </div>
 
-          {/* CTA Link */}
+          {/* Button Link Input */}
           <div className='mb-3'>
             <label className='form-label'>Button Link (Optional)</label>
             <input
               type='text'
               className='form-control'
-              value={content.link}
+              value={content.link || ''}
               onChange={(e) => handleFieldChange('link', e.target.value)}
             />
           </div>
@@ -249,8 +204,10 @@ export default function PortfolioEdit() {
           Save Changes
         </button>
       </form>
-
       <br />
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the PortfolioEdit.jsx setup, check commit lesson-14.
+// lesson-15 Skeletons

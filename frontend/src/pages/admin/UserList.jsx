@@ -1,12 +1,14 @@
-import { useContext, useEffect, useReducer } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
+import LoadingBox from '../../components/LoadingBox.jsx';
 import AdminPagination from '../../components/AdminPagination.jsx';
 import { Store } from '../../Store';
 import { getError } from '../../utils';
+import { SkeletonList } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -24,7 +26,6 @@ const reducer = (state, action) => {
       };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
-
     case 'DELETE_REQUEST':
       return { ...state, loadingDelete: true, successDelete: false };
     case 'DELETE_SUCCESS':
@@ -33,7 +34,6 @@ const reducer = (state, action) => {
       return { ...state, loadingDelete: false };
     case 'DELETE_RESET':
       return { ...state, loadingDelete: false, successDelete: false };
-
     default:
       return state;
   }
@@ -52,19 +52,30 @@ export default function UserList() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // fetch paged users
+  // ✅ Manage skeleton timing
+  const [fetchDone, setFetchDone] = useState(false);
+  const delayedLoading = useDelayedLoading(fetchDone, 2000);
+
+  // ✅ Fetch paged users
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
+
+        // Optional small delay for smoother skeleton transitions
+        await new Promise((r) => setTimeout(r, 800));
+
         const res = await fetch(`/api/users/admin?page=${page}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
+
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+      } finally {
+        setFetchDone(true);
       }
     };
 
@@ -75,7 +86,7 @@ export default function UserList() {
     }
   }, [page, userInfo, successDelete]);
 
-  // delete a user
+  // ✅ Delete handler
   const deleteHandler = async (user) => {
     if (!window.confirm('Are you sure to delete?')) return;
     try {
@@ -94,6 +105,10 @@ export default function UserList() {
     }
   };
 
+  // ✅ Skeleton + Error Handling (early returns)
+  if (delayedLoading) return <SkeletonList />;
+  if (error) return <MessageBox variant='danger'>{error}</MessageBox>;
+
   return (
     <div className='content'>
       <Helmet>
@@ -104,65 +119,60 @@ export default function UserList() {
 
       <div className='box'>
         {loadingDelete && <LoadingBox />}
-        {loading ? (
-          <LoadingBox />
-        ) : error ? (
-          <MessageBox variant='danger'>{error}</MessageBox>
-        ) : (
-          <div className='table-responsive'>
-            <table className='table table-striped table-bordered align-middle noWrap'>
-              <thead className='thead'>
-                <tr>
-                  <th>ID</th>
-                  <th>NAME</th>
-                  <th>EMAIL</th>
-                  <th>IS ADMIN</th>
-                  <th>ACTIONS</th>
+
+        <div className='table-responsive'>
+          <table className='table table-striped table-bordered align-middle noWrap'>
+            <thead className='thead'>
+              <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th>IS ADMIN</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user._id}>
+                  <td>{user._id}</td>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.isAdmin ? 'YES' : 'NO'}</td>
+                  <td className='text-nowrap'>
+                    <button
+                      type='button'
+                      className='btn btn-primary btn-sm'
+                      onClick={() => navigate(`/admin/users/${user._id}`)}
+                    >
+                      Edit
+                    </button>{' '}
+                    <button
+                      type='button'
+                      className='btn btn-danger btn-sm'
+                      onClick={() => deleteHandler(user)}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user._id}>
-                    <td>{user._id}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.isAdmin ? 'YES' : 'NO'}</td>
-                    <td className='text-nowrap'>
-                      <button
-                        type='button'
-                        className='btn btn-primary btn-sm'
-                        onClick={() => navigate(`/admin/users/${user._id}`)}
-                      >
-                        Edit
-                      </button>{' '}
-                      <button
-                        type='button'
-                        className='btn btn-danger btn-sm'
-                        onClick={() => deleteHandler(user)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {users.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className='text-center'>
-                      No users found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan={5} className='text-center'>
+                    No users found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <AdminPagination
         currentPage={page}
         totalPages={pages}
         basePath='/admin/users'
-        showIfSinglePage // <-- forces it to render even with one page
+        showIfSinglePage
       />
       <br />
     </div>
@@ -170,3 +180,4 @@ export default function UserList() {
 }
 
 // If you want to review the commented teaching version of the UserList.jsx setup, check commit lesson-08.
+// lesson-15 Skeletons

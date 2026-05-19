@@ -1,12 +1,14 @@
-import { useContext, useEffect, useReducer } from 'react';
+// src/pages/admin/WebsiteList.jsx
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import AdminPagination from '../../components/AdminPagination.jsx';
+import { SkeletonList } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 import { Store } from '../../Store';
-import { getError, getImageUrl } from '../../utils'; // lesson-10 getImageUrl
+import { getError, getImageUrl } from '../../utils';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -36,7 +38,7 @@ const reducer = (state, action) => {
     case 'DELETE_SUCCESS':
       return { ...state, loadingDelete: false, successDelete: true };
     case 'DELETE_FAIL':
-      return { ...state, loadingDelete: false, successDelete: false };
+      return { ...state, loadingDelete: false };
     case 'DELETE_RESET':
       return { ...state, loadingDelete: false, successDelete: false };
 
@@ -46,19 +48,11 @@ const reducer = (state, action) => {
 };
 
 export default function WebsiteList() {
-  const [
-    {
-      loading,
-      error,
-      websites,
-      totalWebsites,
-      pages,
-      loadingCreate,
-      loadingDelete,
-      successDelete,
-    },
-    dispatch,
-  ] = useReducer(reducer, { loading: true, error: '', websites: [] });
+  const [{ error, websites, totalWebsites, pages, successDelete }, dispatch] =
+    useReducer(reducer, { loading: true, error: '', websites: [] });
+
+  const [fetchDone, setFetchDone] = useState(false);
+  const delayedLoading = useDelayedLoading(fetchDone, 2000);
 
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -67,11 +61,12 @@ export default function WebsiteList() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // Load paginated websites
+  // ✅ Fetch websites
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
+        await new Promise((r) => setTimeout(r, 1000)); // smooth skeleton fade
         const res = await fetch(`/api/websites/admin?page=${page}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
@@ -80,6 +75,8 @@ export default function WebsiteList() {
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+      } finally {
+        setFetchDone(true);
       }
     };
 
@@ -90,7 +87,7 @@ export default function WebsiteList() {
     }
   }, [page, userInfo, successDelete]);
 
-  // Create a new website (your backend sets defaults)
+  // ✅ Create handler
   const createHandler = async () => {
     if (!window.confirm('Are you sure to create?')) return;
     try {
@@ -101,14 +98,12 @@ export default function WebsiteList() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${userInfo.token}`,
         },
-        body: JSON.stringify({}), // backend creates default fields
+        body: JSON.stringify({}),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
-
       toast.success('Website created successfully', { autoClose: 1000 });
       dispatch({ type: 'CREATE_SUCCESS' });
-      // Adjust path if your edit route uses /admin/websites/:id instead
       navigate(`/admin/websites/${data.website._id}`);
     } catch (err) {
       toast.error(getError(err));
@@ -116,7 +111,7 @@ export default function WebsiteList() {
     }
   };
 
-  // Delete a website
+  // ✅ Delete handler
   const deleteHandler = async (website) => {
     if (!window.confirm('Are you sure to delete?')) return;
     try {
@@ -127,7 +122,6 @@ export default function WebsiteList() {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body?.message || `HTTP ${res.status}`);
-
       toast.success('Website deleted successfully', { autoClose: 1000 });
       dispatch({ type: 'DELETE_SUCCESS' });
     } catch (err) {
@@ -135,6 +129,10 @@ export default function WebsiteList() {
       dispatch({ type: 'DELETE_FAIL' });
     }
   };
+
+  // ✅ Skeleton + Error Handling
+  if (delayedLoading) return <SkeletonList />;
+  if (error) return <MessageBox variant='danger'>{error}</MessageBox>;
 
   return (
     <div className='content'>
@@ -162,101 +160,87 @@ export default function WebsiteList() {
         </div>
       </div>
 
-      {loadingCreate && <LoadingBox delay={1000} />}
-      {loadingDelete && <LoadingBox delay={1000} />}
+      <div className='box table-responsive'>
+        <table className='table table-striped table-bordered align-middle noWrap'>
+          <thead className='thead'>
+            <tr>
+              <th>ID / Image / Slug</th>
+              <th>NAME</th>
+              <th>LANGUAGE</th>
+              <th>LANGUAGE DESCRIPTION</th>
+              <th>DESCRIPTION</th>
+              <th>LINK</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {websites.map((website) => (
+              <tr key={website._id}>
+                <td>
+                  {website._id}
+                  <div className='mt-2'>
+                    <img
+                      src={getImageUrl(website.image)}
+                      alt={website.name}
+                      className='img-thumb'
+                    />
+                    <br />
+                    <Link to={`/website/${website.slug}`}>{website.slug}</Link>
+                  </div>
+                </td>
+                <td>{website.name}</td>
+                <td>{website.language}</td>
+                <td>{website.languageDescription}</td>
+                <td className='description-cell'>{website.description}</td>
+                <td>
+                  <a
+                    href={website.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {website.link}
+                  </a>
+                </td>
+                <td className='text-nowrap'>
+                  <button
+                    type='button'
+                    className='btn btn-primary btn-sm'
+                    onClick={() => navigate(`/admin/websites/${website._id}`)}
+                  >
+                    Edit
+                  </button>{' '}
+                  <button
+                    type='button'
+                    className='btn btn-danger btn-sm'
+                    onClick={() => deleteHandler(website)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {websites.length === 0 && (
+              <tr>
+                <td colSpan={7} className='text-center'>
+                  No websites found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {loading ? (
-        <LoadingBox delay={1000} />
-      ) : error ? (
-        <MessageBox variant='danger'>{error}</MessageBox>
-      ) : (
-        <>
-          <div className='box table-responsive'>
-            <table className='table table-striped table-bordered align-middle noWrap'>
-              <thead className='thead'>
-                <tr>
-                  <th>ID / Image / Slug</th>
-                  <th>NAME</th>
-                  <th>LANGUAGE</th>
-                  <th>LANGUAGE DESCRIPTION</th>
-                  <th>DESCRIPTION</th>
-                  <th>LINK</th>
-                  <th>ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {websites.map((website) => (
-                  <tr key={website._id}>
-                    <td>
-                      {website._id}
-                      <div className='mt-2'>
-                        <img
-                          src={getImageUrl(website.image)}
-                          alt={website.name}
-                          className='img-thumb' // updated portfolio.css
-                        />
-                        <br />
-                        <Link to={`/website/${website.slug}`}>
-                          {website.slug}
-                        </Link>
-                      </div>
-                    </td>
-                    <td>{website.name}</td>
-                    <td>{website.language}</td>
-                    <td>{website.languageDescription}</td>
-                    <td className='description-cell'>{website.description}</td>
-                    <td>
-                      <a
-                        href={website.link}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        {website.link}
-                      </a>
-                    </td>
-                    <td className='text-nowrap'>
-                      <button
-                        type='button'
-                        className='btn btn-primary btn-sm'
-                        onClick={() =>
-                          navigate(`/admin/websites/${website._id}`)
-                        } // adjust if your edit path is /admin/websites/:id
-                      >
-                        Edit
-                      </button>{' '}
-                      <button
-                        type='button'
-                        className='btn btn-danger btn-sm'
-                        onClick={() => deleteHandler(website)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {websites.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className='text-center'>
-                      No websites found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <AdminPagination
-            currentPage={Number(page)}
-            totalPages={pages}
-            basePath='/admin/websites'
-            showIfSinglePage // <-- forces it to render even with one page
-          />
-          <br />
-        </>
-      )}
+      <AdminPagination
+        currentPage={Number(page)}
+        totalPages={pages}
+        basePath='/admin/websites'
+        showIfSinglePage
+      />
+      <br />
     </div>
   );
 }
 
 // If you want to review the commented teaching version of the WebsiteList.jsx setup, check commit lesson-09.
 // lesson-10 updated getImageUrl
+// lesson-15 Skeletons

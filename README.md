@@ -481,3 +481,26 @@ main.jsx > updated, uncommented PortfolioEdit.jsx
 Run Website:
 BACKEND: nvm use 20 > npm run dev
 FRONTEND: nvm use 20 > npm run dev
+
+# 15th Commit-Skeletons Final
+
+FRONTEND
+folder: src > Hooks > added
+useDelayedLoading.jsx > added (reusable)
+
+folder: components
+Header.jsx > updated
+new folder: skeletons
+index.jsx > added (wrapper)
+SkeletonDetail.jsx > added
+SkeletonBase.jsx > added
+SkeletonForm.jsx > added
+SkeletonHero.jsx > added
+SkeletonList.jsx > added
+Wrapper.jsx > added
+
+folder: pages
+all pages updated with Skeletons
+except for Signin and Signup
+
+Moved Contact.jsx into forms folder

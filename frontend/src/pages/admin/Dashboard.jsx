@@ -1,9 +1,9 @@
 import { useContext, useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Chart from 'react-google-charts';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import { Store } from '../../Store';
+import SkeletonBase from '../../components/skeletons/SkeletonBase.jsx';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -88,7 +88,7 @@ export default function Dashboard() {
       <h2 className='box'>Admin Dashboard</h2>
 
       {loading ? (
-        <LoadingBox />
+        <SkeletonBase />
       ) : error ? (
         <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
@@ -159,3 +159,4 @@ export default function Dashboard() {
 
 // If you want to review the commented teaching version of the Dashboard.jsx setup, check commit lesson-07.
 // Moved into pages/admin folder lesson-08, update main.jsx
+// lesson-15 Skeletons

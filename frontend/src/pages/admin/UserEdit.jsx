@@ -1,11 +1,14 @@
+// src/pages/admin/UserEdit.jsx
 import { useContext, useEffect, useReducer, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import MessageBox from '../../components/MessageBox.jsx';
 import { Store } from '../../Store';
 import { getError } from '../../utils';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
+import Wrapper from '../../components/Wrapper.jsx';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -26,7 +29,7 @@ const reducer = (state, action) => {
 };
 
 export default function UserEdit() {
-  const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
+  const [{ error, loadingUpdate }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
     loadingUpdate: false,
@@ -34,6 +37,9 @@ export default function UserEdit() {
 
   const { state } = useContext(Store);
   const { userInfo } = state;
+
+  const [fetchDone, setFetchDone] = useState(false);
+  const loading = useDelayedLoading(fetchDone, 2000);
 
   const { id: userId } = useParams();
   const navigate = useNavigate();
@@ -46,6 +52,7 @@ export default function UserEdit() {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
+        await new Promise((r) => setTimeout(r, 1200)); // Simulate delay for skeleton
         const res = await fetch(`/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
@@ -57,6 +64,8 @@ export default function UserEdit() {
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+      } finally {
+        setFetchDone(true);
       }
     };
     fetchData();
@@ -92,93 +101,92 @@ export default function UserEdit() {
     }
   };
 
+  // ✅ Early returns
+  if (loading) return <SkeletonForm />;
+  if (error) return <MessageBox variant='danger'>{error}</MessageBox>;
+
   return (
-    <div className='content'>
+    // Wrapper is for small screen
+    <Wrapper>
       <Helmet>
         <title>Edit User {userId}</title>
       </Helmet>
-      <br />
-      <div className='d-flex justify-content-between align-items-center'>
+      <div className='d-flex justify-content-between align-items-center mb-3 w-100'>
         <h4 className='box mb-0'>Edit User {userId}</h4>
         <Link to='/admin/users' className='btn btn-outline-secondary'>
           Back
         </Link>
       </div>
 
-      {loading ? (
-        <LoadingBox />
-      ) : error ? (
-        <MessageBox variant='danger'>{error}</MessageBox>
-      ) : (
-        <div className='box' style={{ maxWidth: 640 }}>
-          <form onSubmit={submitHandler} noValidate>
-            <div className='mb-3'>
-              <label htmlFor='name' className='form-label'>
-                Name
-              </label>
-              <input
-                id='name'
-                className='form-control'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete='name'
-                required
-              />
-            </div>
+      <div className='box' style={{ maxWidth: 640, width: '100%' }}>
+        <form onSubmit={submitHandler} noValidate>
+          <div className='mb-3'>
+            <label htmlFor='name' className='form-label'>
+              Name
+            </label>
+            <input
+              id='name'
+              className='form-control'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete='name'
+              required
+            />
+          </div>
 
-            <div className='mb-3'>
-              <label htmlFor='email' className='form-label'>
-                Email
-              </label>
-              <input
-                id='email'
-                type='email'
-                className='form-control'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete='email'
-                required
-              />
-            </div>
+          <div className='mb-3'>
+            <label htmlFor='email' className='form-label'>
+              Email
+            </label>
+            <input
+              id='email'
+              type='email'
+              className='form-control'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete='email'
+              required
+            />
+          </div>
 
-            <div className='form-check mb-3'>
-              <input
-                className='form-check-input'
-                type='checkbox'
-                id='isAdmin'
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-              />
-              <label className='form-check-label' htmlFor='isAdmin'>
-                isAdmin
-              </label>
-            </div>
+          <div className='form-check mb-3'>
+            <input
+              className='form-check-input'
+              type='checkbox'
+              id='isAdmin'
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            <label className='form-check-label' htmlFor='isAdmin'>
+              isAdmin
+            </label>
+          </div>
 
-            <div className='mb-3 d-grid'>
-              <button
-                className='btn btn-primary'
-                type='submit'
-                disabled={loadingUpdate || !name || !email}
-              >
-                {loadingUpdate ? (
-                  <>
-                    <span
-                      className='spinner-border spinner-border-sm me-2'
-                      role='status'
-                      aria-hidden='true'
-                    />
-                    Updating…
-                  </>
-                ) : (
-                  'Update'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-    </div>
+          <div className='mb-3 d-grid'>
+            <button
+              className='btn btn-primary'
+              type='submit'
+              disabled={loadingUpdate || !name || !email}
+            >
+              {loadingUpdate ? (
+                <>
+                  <span
+                    className='spinner-border spinner-border-sm me-2'
+                    role='status'
+                    aria-hidden='true'
+                  />
+                  Updating…
+                </>
+              ) : (
+                'Update'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Wrapper>
   );
 }
 
 // If you want to review the commented teaching version of the UserEdit.jsx setup, check commit lesson-08.
+// lesson-15 Skeletons

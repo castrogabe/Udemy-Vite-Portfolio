@@ -1,40 +1,23 @@
-// -----------------------------------------------------------------------------
-// HomeContentEdit.jsx — Lesson 11
-// -----------------------------------------------------------------------------
-// This admin screen lets us edit *dynamic homepage content* stored in MongoDB.
-// It supports:
-//
-//   • Editable Typewriter/Jumbotron lines (dynamic array)
-//   • Editable homepage sections (title, text, button text, button link)
-//   • Add/Delete entries dynamically
-//   • PUT updates sent to /api/homecontent
-//
-// This replaces hard-coded text in Home.jsx and allows the site owner to change
-// the homepage without touching code.
-// -----------------------------------------------------------------------------
-
+// src/pages/HomeContentEdit.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../../Store';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
 
-// Lesson-11: support Vite dev + production APIs using VITE_API_URL if set
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 export default function HomeContentEdit() {
-  // jumbotronText → array of strings used by the Typewriter effect
-  // sections → array of homepage sections
   const [jumbotronText, setJumbotronText] = useState([]);
   const [sections, setSections] = useState([]);
-
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  // -----------------------------------------------------------------------------
-  // Load homepage content (Lesson 11)
-  // GET /api/homecontent
-  //
+  const [fetchDone, setFetchDone] = useState(false);
+  const loading = useDelayedLoading(fetchDone, 2000);
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -48,7 +31,6 @@ export default function HomeContentEdit() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setJumbotronText(data.jumbotronText || []);
-
         // Ensure that each section object has link and linkText properties
         const formattedSections = (data.sections || []).map((section) => ({
           ...section,
@@ -59,12 +41,14 @@ export default function HomeContentEdit() {
       } catch (error) {
         console.error('Failed to fetch content:', error);
         toast.error('Failed to fetch content');
+      } finally {
+        // ✅ Important: mark fetch as complete
+        setFetchDone(true);
       }
     };
     fetchContent();
   }, [userInfo]);
 
-  // ----- Jumbotron text handlers (Lesson 11 dynamic array) ---------------------
   const handleJumbotronTextChange = (index, e) => {
     const newText = [...jumbotronText];
     newText[index] = e.target.value;
@@ -81,14 +65,12 @@ export default function HomeContentEdit() {
     setJumbotronText(newText);
   };
 
-  // ----- Section handlers (Lesson 11 dynamic homepage sections) ---------------
   const handleSectionChange = (index, field, value) => {
     const newSections = [...sections];
     newSections[index][field] = value;
     setSections(newSections);
   };
 
-  // Lesson-11: homepage section now supports button text + button link
   const handleAddSection = () => {
     // Include new fields in the initial state for a new section
     setSections([
@@ -103,10 +85,6 @@ export default function HomeContentEdit() {
     setSections(newSections);
   };
 
-  // ------------------------------------------------------------------------------
-  // Submit changes to backend
-  // PUT /api/homecontent
-  // -----------------------------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -123,8 +101,6 @@ export default function HomeContentEdit() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-
-      // Update local state with saved version
       setJumbotronText(data.jumbotronText);
       setSections(data.sections);
       toast.success('Content updated successfully', { autoClose: 1000 });
@@ -134,9 +110,8 @@ export default function HomeContentEdit() {
     }
   };
 
-  // -----------------------------------------------------------------------------
-  // Render editable form — everything here is fully dynamic (Lesson 11)
-  // -----------------------------------------------------------------------------
+  // ---------- Render ----------
+  if (loading) return <SkeletonForm />;
 
   return (
     <div className='content'>
@@ -273,3 +248,6 @@ export default function HomeContentEdit() {
     </div>
   );
 }
+
+// If you want to review the commented teaching version of the HomeContentEdit.jsx setup, check commit lesson-11.
+// lesson-15 Skeletons

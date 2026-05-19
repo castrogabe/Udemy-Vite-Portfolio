@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
-import LoadingBox from '../components/LoadingBox';
 import SectionImages from '../components/SectionImages';
+import useDelayedLoading from '../hooks/useDelayedLoading';
+import { SkeletonBase } from '../components/skeletons';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 export default function Design() {
   const [content, setContent] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [fetchDone, setFetchDone] = useState(false);
 
+  // Custom hook for smooth skeleton timing
+  const loading = useDelayedLoading(fetchDone, 2000);
+
+  // Fetch data
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/designcontent`);
-        if (!res.ok) throw new Error('Failed to fetch about content');
+        if (!res.ok) throw new Error('Failed to fetch design content');
         const data = await res.json();
         setContent(data);
       } catch (error) {
         console.error(error);
-        toast.error('Failed to load content');
+        toast.error('Failed to load design content', { autoClose: 2000 });
       } finally {
-        setIsLoading(false);
+        setFetchDone(true);
       }
     };
     fetchContent();
   }, []);
 
-  if (isLoading) return <LoadingBox />;
+  if (loading) return <SkeletonBase />;
+
   if (!content) {
     return (
       <>
@@ -35,7 +41,9 @@ export default function Design() {
           <title>Design</title>
         </Helmet>
         <div className='content'>
-          <p>Content not found.</p>
+          <div className='box'>
+            <p>Content not found.</p>
+          </div>
         </div>
       </>
     );
@@ -43,7 +51,7 @@ export default function Design() {
 
   const sections = Array.isArray(content.sections) ? content.sections : [];
   const firstSection = sections[0];
-  const firstSectionImage = firstSection?.images?.[0]; // only the 1st image is displayed in the top split layout
+  const firstSectionImage = firstSection?.images?.[0];
   const remainingSections = sections.slice(1);
 
   return (
@@ -64,26 +72,19 @@ export default function Design() {
       )}
 
       <div className='content'>
-        {/* Split layout: First section text on the left, first image on the right */}
-        {firstSection ? (
+        {/* Split layout for the first section */}
+        {firstSection && (
           <div className='box'>
             <div className='row g-4 align-items-start'>
-              {/* Text Column (Left) */}
+              {/* Text Column */}
               <div className={firstSectionImage ? 'col-md-7' : 'col-md-12'}>
                 {firstSection.title && <h2>{firstSection.title}</h2>}
                 {firstSection.paragraphs?.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
-
-                {/* New in Lesson 13: optional button for the FIRST section too */}
-                {firstSection.link && firstSection.linkText && (
-                  <a href={firstSection.link} className='my-button'>
-                    {firstSection.linkText}
-                  </a>
-                )}
               </div>
 
-              {/* Certificate/Image Column (Right) - Use firstSectionImage data here */}
+              {/* Image Column */}
               {firstSectionImage && (
                 <div className='col-md-5'>
                   <div className='p-3 bg-light border rounded text-center'>
@@ -102,21 +103,20 @@ export default function Design() {
               )}
             </div>
           </div>
-        ) : null}
+        )}
 
+        {/* Remaining sections */}
         {remainingSections.map((section, index) => (
           <div className='box' key={index}>
             {section.title && <h2>{section.title}</h2>}
             {section.paragraphs?.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}
-
             {section.link && section.linkText && (
               <a href={section.link} className='my-button'>
                 {section.linkText}
               </a>
             )}
-
             <SectionImages images={section.images} />
           </div>
         ))}
@@ -127,3 +127,4 @@ export default function Design() {
 
 // If you want to review the commented teaching version of the Design.jsx setup, check commit lesson-04.
 // lesson-13: Dynamic design page powered by designContentModel + API
+// lesson-15 Skeletons

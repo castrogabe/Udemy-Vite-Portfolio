@@ -1,8 +1,11 @@
-import { useContext, useReducer, useState, useMemo } from 'react';
+import { useContext, useReducer, useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../../Store';
 import { toast } from 'react-toastify';
 import { getError } from '../../utils';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading';
+import Wrapper from '../../components/Wrapper.jsx';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -20,8 +23,11 @@ export default function Profile() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
-  const [name, setName] = useState(userInfo?.name || '');
-  const [email, setEmail] = useState(userInfo?.email || '');
+  const [fetchDone, setFetchDone] = useState(false);
+  const delayedLoading = useDelayedLoading(fetchDone, 2000);
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +36,18 @@ export default function Profile() {
   const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
   });
+
+  // ✅ Simulate small delay to show Skeleton
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (userInfo) {
+        setName(userInfo.name || '');
+        setEmail(userInfo.email || '');
+      }
+      setFetchDone(true);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [userInfo]);
 
   const passwordsMismatch = useMemo(
     () =>
@@ -70,7 +88,7 @@ export default function Profile() {
       localStorage.setItem('userInfo', JSON.stringify(data));
       toast.success('User updated successfully', { autoClose: 1000 });
 
-      // clear password fields after success
+      // Clear passwords after success
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -81,13 +99,14 @@ export default function Profile() {
     }
   };
 
+  // ✅ Skeleton + Wrapper layout
+  if (delayedLoading) return <SkeletonForm />;
+
   return (
-    <div className='content'>
+    <Wrapper title='User Profile'>
       <Helmet>
         <title>User Profile</title>
       </Helmet>
-      <br />
-      <h4 className='box'>User Profile</h4>
 
       <div className='box' style={{ maxWidth: 640 }}>
         <form onSubmit={submitHandler} noValidate>
@@ -213,8 +232,9 @@ export default function Profile() {
           </div>
         </form>
       </div>
-    </div>
+    </Wrapper>
   );
 }
 
 // If you want to review the commented teaching version of the Profile.jsx setup, check commit lesson-07.
+// Lesson-14 Skeletons

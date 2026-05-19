@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../../Store';
 import { toast } from 'react-toastify';
+import { SkeletonForm } from '../../components/skeletons';
+import useDelayedLoading from '../../hooks/useDelayedLoading'; // hook for delay
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
@@ -12,6 +14,9 @@ export default function DesignEdit() {
   });
   const { state } = useContext(Store);
   const { userInfo } = state;
+
+  const [fetchDone, setFetchDone] = useState(false);
+  const loading = useDelayedLoading(fetchDone, 2000); // ✅ consistent skeleton delay
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -33,6 +38,8 @@ export default function DesignEdit() {
       } catch (error) {
         console.error(error);
         toast.error('Failed to load content', { autoClose: 1000 });
+      } finally {
+        setFetchDone(true);
       }
     };
     fetchContent();
@@ -100,7 +107,7 @@ export default function DesignEdit() {
       }
 
       const newSections = [...content.sections];
-      newSections[sectionIndex].images.push(data.image); // Add new image
+      newSections[sectionIndex].images.push(data.image);
       setContent({ ...content, sections: newSections });
       toast.success('Image uploaded successfully', { autoClose: 1000 });
     } catch (error) {
@@ -190,7 +197,6 @@ export default function DesignEdit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await fetch(`${API_BASE}/api/designcontent`, {
         method: 'PUT',
@@ -216,11 +222,14 @@ export default function DesignEdit() {
     }
   };
 
+  // This function is perfect for the job!
   const handleSectionFieldChange = (sectionIndex, field, value) => {
     const newSections = [...content.sections];
     newSections[sectionIndex][field] = value;
     setContent({ ...content, sections: newSections });
   };
+
+  if (loading) return <SkeletonForm />;
 
   return (
     <div className='content'>
@@ -417,3 +426,4 @@ export default function DesignEdit() {
 }
 
 // If you want to review the commented teaching version of the DesignEdit.jsx setup, check commit lesson-13.
+// lesson-15 Skeletons

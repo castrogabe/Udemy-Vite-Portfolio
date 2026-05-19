@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
-import LoadingBox from '../../components/LoadingBox.jsx';
 import { toast } from 'react-toastify';
 import { Store } from '../../Store';
+import LoadingBox from '../../components/LoadingBox.jsx';
+import { SkeletonForm } from '../../components/skeletons';
 import { getError } from '../../utils';
 
 export default function ResetPassword() {
@@ -18,14 +19,13 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // optional page skeleton
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(t);
   }, []);
 
-  // bounce if logged in or token missing
+  // Redirect if logged in or token missing
   useEffect(() => {
     if (userInfo || !token) navigate('/');
   }, [navigate, userInfo, token]);
@@ -62,14 +62,15 @@ export default function ResetPassword() {
     password !== confirmPassword;
 
   return (
-    <div className='content'>
+    <>
       <Helmet>
         <title>Reset Password</title>
       </Helmet>
-      <br />
-      <h4 className='box'>Reset Password</h4>
 
-      <div className='box' style={{ maxWidth: 640 }}>
+      <SkeletonForm
+        title='Reset Password'
+        subtitle='Enter and confirm your new password below'
+      >
         <form onSubmit={submitHandler} noValidate>
           <div className='mb-3'>
             <label htmlFor='password' className='form-label'>
@@ -167,9 +168,10 @@ export default function ResetPassword() {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </SkeletonForm>
+    </>
   );
 }
 
 // If you want to review the commented teaching version of the ResetPassword.jsx setup, check commit lesson-07.
+// Lesson-14 Skeletons
